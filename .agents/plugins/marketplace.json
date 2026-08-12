@@ -1,0 +1,16 @@
+{
+  "name": "goodmem",
+  "interface": {
+    "displayName": "GoodMem"
+  },
+  "plugins": [
+    {
+      "name": "goodmem",
+      "source": {
+        "source": "local",
+        "path": "./plugins/goodmem"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "goodmem": {
+      "command": "npx",
+      "args": ["-y", "@pairsystems/goodmem-mcp"],
+      "env_vars": [
+        "GOODMEM_BASE_URL",
+        "GOODMEM_API_KEY",
+        "NODE_EXTRA_CA_CERTS"
+      ],
+      "startup_timeout_sec": 30,
+      "tool_timeout_sec": 300
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "name": "goodmem",
+  "version": "1.0.0",
+  "description": "Persistent memory for AI workflows: store knowledge in access-controlled spaces on your GoodMem instance and retrieve it with semantic search, reranking, and document ingestion.",
+  "author": {
+    "name": "PAIR Systems, Inc.",
+    "email": "support@pairsys.ai",
+    "url": "https://pairsys.ai"
+  },
+  "homepage": "https://docs.goodmem.ai",
+  "repository": "https://github.com/PAIR-Systems-Inc/goodmem-openai-plugin",
+  "license": "MIT",
+  "keywords": [
+    "memory",
+    "rag",
+    "semantic-search",
+    "knowledge-base",
+    "retrieval",
+    "embeddings",
+    "reranking",
+    "ocr"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "GoodMem",
+    "shortDescription": "Give your agent persistent memory: spaces, semantic retrieval, and document ingestion",
+    "longDescription": "GoodMem gives your agent persistent memory on your own GoodMem instance. Create spaces to hold memories, add memories by ingesting text and documents (with scanned-file OCR on GoodMem Enterprise), and search through them with semantic retrieval. Narrow searches with metadata filters, run deeper multi-round searches for complex questions, and let an LLM summarize the retrieved memories into a direct answer. Rerank results for higher precision, and try different embedding models to find the best fit for your data. Comes with ready-made skills for common memory workflows, plus Python and Java SDK references for building GoodMem into your own applications.",
+    "developerName": "PAIR Systems, Inc.",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://docs.goodmem.ai",
+    "privacyPolicyURL": "https://pairsys.ai/privacy",
+    "termsOfServiceURL": "https://pairsys.ai/terms",
+    "defaultPrompt": [
+      "Set up a GoodMem space for this project and ingest the docs folder",
+      "What do we already know about this topic in GoodMem?",
+      "Save a summary of this session to GoodMem"
+    ],
+    "brandColor": "#2563EB",
+    "composerIcon": "./assets/goodmem-small.png",
+    "logo": "./assets/goodmem.png",
+    "screenshots": [
+      "./assets/screenshot-1.png",
+      "./assets/screenshot-2.png",
+      "./assets/screenshot-3.png"
+    ]
+  }
+}

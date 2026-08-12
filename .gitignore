@@ -1,0 +1,9 @@
+node_modules/
+*.log
+.DS_Store
+*.tgz
+.env
+
+# local-only directories, never part of the public bundle
+scripts/
+gateway/
