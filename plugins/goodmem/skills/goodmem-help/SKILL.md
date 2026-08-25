@@ -1,51 +1,53 @@
 ---
 name: goodmem-help
-description: Set up, verify, and troubleshoot the GoodMem connection. Use when GoodMem tools fail with authentication, connection, or TLS errors, when credentials are not configured yet, or when the user asks how to get started with GoodMem.
+description: Verify and troubleshoot the GoodMem connection. Use when GoodMem tools fail with authorization or connection errors, when the user is not signed in yet, or when the user asks how to get started with GoodMem.
 ---
 
 # GoodMem Setup & Troubleshooting
 
-GoodMem tools talk to the user's own GoodMem instance. Two environment variables
-must be set before any tool works:
+GoodMem tools talk to the user's GoodMem Cloud instance through GoodMem's
+hosted service. There is nothing to configure: no URLs, no API keys, no local
+server. The user signs in once with their GoodMem account and picks the
+instance to connect; everything after that is automatic.
 
-| Variable | Meaning |
-|---|---|
-| `GOODMEM_BASE_URL` | The instance's REST URL, e.g. `http://localhost:8081` or `https://goodmem.example.com` |
-| `GOODMEM_API_KEY` | An API key, starts with `gm_` |
+## Getting started
+
+If GoodMem tools are not available or answer that the connection is not
+authorized, the user needs to sign in:
+
+- In Codex, run `codex mcp login goodmem` (or simply use a GoodMem tool — the
+  sign-in opens automatically when needed).
+- The browser opens GoodMem's own sign-in page: they sign in with their
+  GoodMem account, pick a team if they have more than one, then pick the
+  instance to connect.
+- No GoodMem account yet → they can create one at
+  [cloud.goodmem.ai/login](https://cloud.goodmem.ai/login?loc=cloud-hero), or
+  ask their organization's administrator for access.
+
+For this connection, never ask the user for an API key or an instance URL —
+the sign-in flow is the only path, by design. (Writing their own application
+with the GoodMem SDKs is different: there, keys from the console are the
+normal way in — see the goodmem-sdk skill.)
 
 ## Verify the connection
 
-Before doing memory work in a fresh session, confirm the connection with a cheap
-read-only call:
+Before doing memory work in a fresh session, confirm the connection with a
+cheap read-only call: `goodmem_users_me`. Success proves the connection is
+signed in and authorized — report who the user is connected as and move on.
+On failure, diagnose with the table below instead of retrying blindly.
 
-1. Call `goodmem_system_info`. Success → connected; report the server version and
-   move on.
-2. On failure, diagnose with the table below instead of retrying blindly.
-
-## Credentials are missing or wrong
-
-If tools fail because credentials are not set:
-
-- Ask the user to set `GOODMEM_BASE_URL` and `GOODMEM_API_KEY` in their shell
-  environment and restart the session.
-- **Never ask the user to paste an API key into the conversation**, and never
-  echo a key back in any response. Keys belong in the environment, not in chat.
-- If the user has no key, point them to their GoodMem Console (or their
-  administrator). If they have no instance, point them to the install guide at
-  https://docs.goodmem.ai.
-
-## Error → cause → fix
+## Troubleshooting
 
 | Error | Likely cause | Fix |
 |---|---|---|
-| `401` / `UNAUTHENTICATED` | Key missing, mistyped, or revoked | Check `GOODMEM_API_KEY`; keys start with `gm_` |
-| `403` / `PERMISSION_DENIED` | Key lacks the required permission | The user needs a key with broader permissions from their administrator |
-| `ECONNREFUSED`, DNS error, timeout at startup | Wrong URL, wrong port, or instance down | Verify `GOODMEM_BASE_URL` scheme/host/port; confirm the instance is running |
-| TLS certificate error | Server uses a private CA | Set `NODE_EXTRA_CA_CERTS` to the CA certificate file path; do not suggest disabling TLS verification |
-| OCR tool fails while other tools work | OCR is a GoodMem Enterprise feature and this instance does not have it | Ingest the document as text instead; mention GoodMem Enterprise only if the user asks why |
+| "no longer authorized — the instance's API key was changed" | The instance's key was rotated or the grant revoked | Sign out and sign in again (`codex mcp logout goodmem`, then `codex mcp login goodmem`) — reconnecting repairs the connection automatically |
+| Sign-in page rejects the email | The organization hasn't enabled access for that account | Ask the GoodMem administrator |
+| The instance isn't in the picker | Wrong team selected, or the instance is still provisioning or paused | Pick the right team first; check the instance's status in the GoodMem Cloud console |
+| Space creation fails with a setup link | The instance has no embedding model yet | Relay the message and link exactly as the error instructs; the user completes a one-minute setup in their console, then retry |
+| A memory's `processing_status` is `FAILED` | The instance's embedding pipeline is broken — `processing_error` says why (for example an invalid provider key) | Report `processing_error` to the user; the fix happens in their GoodMem console |
 | Long-running retrieval times out | Answer summarization over large spaces | Retry with a smaller result limit, or retrieve without summarization and analyze the chunks directly |
 
 ## After connecting
 
-For the memory workflow itself (spaces, ingestion, retrieval), follow the
-`goodmem-memory-workflow` skill.
+Hand off to the **goodmem-memory-workflow** skill for the actual memory work:
+spaces, ingestion, processing, retrieval.

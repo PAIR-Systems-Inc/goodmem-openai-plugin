@@ -1,7 +1,7 @@
 {
   "name": "goodmem",
   "version": "1.0.0",
-  "description": "Persistent memory for AI workflows: store knowledge in access-controlled spaces on your GoodMem instance and retrieve it with semantic search, reranking, and document ingestion.",
+  "description": "Persistent memory for AI workflows: store knowledge in access-controlled spaces on your GoodMem Cloud instance and retrieve it with semantic search and reranking.",
   "author": {
     "name": "PAIR Systems, Inc.",
     "email": "support@pairsys.ai",
@@ -17,15 +17,14 @@
     "knowledge-base",
     "retrieval",
     "embeddings",
-    "reranking",
-    "ocr"
+    "reranking"
   ],
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "GoodMem",
-    "shortDescription": "Give your agent persistent memory: spaces, semantic retrieval, and document ingestion",
-    "longDescription": "GoodMem gives your agent persistent memory on your own GoodMem instance. Create spaces to hold memories, add memories by ingesting text and documents (with scanned-file OCR on GoodMem Enterprise), and search through them with semantic retrieval. Narrow searches with metadata filters, run deeper multi-round searches for complex questions, and let an LLM summarize the retrieved memories into a direct answer. Rerank results for higher precision, and try different embedding models to find the best fit for your data. Comes with ready-made skills for common memory workflows, plus Python and Java SDK references for building GoodMem into your own applications.",
+    "shortDescription": "Give your agent persistent memory: spaces, semantic retrieval, and reranking",
+    "longDescription": "GoodMem gives your agent persistent memory on your GoodMem Cloud instance. Sign in once with your GoodMem account — no API keys, no local server — and Codex connects to your instance through GoodMem's hosted service. Create spaces to hold memories, save what you and Codex read, and search it back with semantic retrieval. Narrow searches with metadata filters, and let an LLM summarize the retrieved memories into a direct answer. Comes with ready-made skills for common memory workflows, plus Python, TypeScript, Java, and .NET SDK references for building GoodMem into your own applications.",
     "developerName": "PAIR Systems, Inc.",
     "category": "Developer Tools",
     "capabilities": [
@@ -37,7 +36,7 @@
     "privacyPolicyURL": "https://pairsys.ai/privacy",
     "termsOfServiceURL": "https://pairsys.ai/terms",
     "defaultPrompt": [
-      "Set up a GoodMem space for this project and ingest the docs folder",
+      "Set up a GoodMem space for this project and save what the docs folder says",
       "What do we already know about this topic in GoodMem?",
       "Save a summary of this session to GoodMem"
     ],
