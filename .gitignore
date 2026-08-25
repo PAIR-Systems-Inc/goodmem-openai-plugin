@@ -4,6 +4,10 @@ node_modules/
 *.tgz
 .env
 
-# local-only directories, never part of the public bundle
+# internal tooling — never committed
 scripts/
+
+# The gateway service lives in the private repo
+# PAIR-Systems-Inc/goodmem-work-gateway; this repository holds only the
+# public plugin bundles. A local working copy may remain here untracked.
 gateway/

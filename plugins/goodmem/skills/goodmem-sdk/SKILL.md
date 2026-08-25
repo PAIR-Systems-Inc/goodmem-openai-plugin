@@ -1,40 +1,30 @@
 ---
 name: goodmem-sdk
-description: Complete SDK references for building GoodMem into applications. Use when the user wants to write code that integrates GoodMem — creating spaces, ingesting memories, semantic retrieval, RAG pipelines, or managing embedders/rerankers/LLMs — in Python (goodmem package) or Java (ai.pairsys:goodmem-java).
+description: Complete SDK references for building GoodMem into applications. Use when the user wants to write code that integrates GoodMem — creating spaces, ingesting memories, semantic retrieval, RAG pipelines, or managing embedders/rerankers/LLMs — in Python (goodmem), TypeScript (@pairsystems/goodmem), Java (ai.pairsys:goodmem-java), or .NET (PairSystems.Goodmem.Client).
 ---
 
 # GoodMem SDK
 
-GoodMem is a self-hostable memory and retrieval (RAG) service. Applications
-store content as **memories** inside **spaces**; GoodMem chunks and embeds the
-content server-side using a registered **embedder**, then serves semantic
-retrieval over it — optionally post-processed by a **reranker** (precision) or
-an **LLM** (answer generation/summarization). The REST API lives under
+GoodMem is a memory and retrieval (RAG) service. Applications store content as
+**memories** inside **spaces**; GoodMem chunks and embeds the content
+server-side using a registered **embedder**, then serves semantic retrieval
+over it — optionally post-processed by a **reranker** (precision) or an
+**LLM** (answer generation/summarization). The REST API lives under
 `{base_url}/v1` and authenticates with an `x-api-key` header carrying a key
-that starts with `gm_`. Both SDKs wrap that API with typed, namespaced clients.
+that starts with `gm_`. Every SDK wraps that API with a typed, namespaced
+client: `client.<namespace>.<method>(...)`.
 
 ## Install
 
-**Python** (requires Python >= 3.10; brings in `httpx` and `pydantic`):
+Always use the latest published version; the reference files carry the exact
+version they were generated from.
 
-```bash
-pip install goodmem
-```
-
-**Java** (Maven Central, requires JDK 21):
-
-```xml
-<dependency>
-    <groupId>ai.pairsys</groupId>
-    <artifactId>goodmem-java</artifactId>
-    <version>0.1.7</version>
-</dependency>
-```
-
-```kotlin
-// build.gradle.kts
-dependencies { implementation("ai.pairsys:goodmem-java:0.1.7") }
-```
+| Language | Package | Install |
+|---|---|---|
+| Python (>= 3.10) | `goodmem` (PyPI) | `pip install goodmem` |
+| TypeScript / Node | `@pairsystems/goodmem` (npm) | `npm install @pairsystems/goodmem` |
+| Java (JDK 21+) | `ai.pairsys:goodmem-java` (Maven Central) | add the Maven/Gradle dependency |
+| .NET | `PairSystems.Goodmem.Client` (NuGet) | `dotnet add package PairSystems.Goodmem.Client` |
 
 ## Python quick start
 
@@ -45,7 +35,7 @@ import os
 from goodmem import Goodmem
 
 with Goodmem(
-    base_url=os.environ["GOODMEM_BASE_URL"],   # e.g. http://localhost:8080
+    base_url=os.environ["GOODMEM_BASE_URL"],   # e.g. https://your-instance.cloud.goodmem.ai
     api_key=os.environ["GOODMEM_API_KEY"],     # gm_...
 ) as client:
     memory = client.memories.create(
@@ -60,6 +50,9 @@ with Goodmem(
             if event.retrieved_item:
                 print(event.retrieved_item.chunk.chunk.chunk_text)
 ```
+
+The same flow translates directly to the other SDKs — same namespaces, same
+method names in each language's naming convention.
 
 ## Core concepts
 
@@ -83,6 +76,11 @@ with Goodmem(
 
 ## Where to go next
 
-- Read `references/python.md` for the complete Python reference
-  (client construction, every namespace, pagination, streaming, errors).
-- Read `references/java.md` for the complete Java reference.
+Each reference is generated from the published package and stamped with the
+version it documents:
+
+- `references/python.md` — complete Python reference (client construction,
+  every namespace, pagination, streaming, errors).
+- `references/typescript.md` — complete TypeScript reference.
+- `references/java.md` — complete Java reference.
+- `references/dotnet.md` — complete .NET reference.
