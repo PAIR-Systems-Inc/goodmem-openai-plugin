@@ -32,5 +32,7 @@ Do not retry authorization failures blindly.
 Disconnect and reconnect the GoodMem app through the current host's connection
 settings. This restarts OAuth against the same hosted gateway and cloud instance.
 
-For model creation requested by the user, call `goodmem_console_setup` with
-`kind` `embedder`, `reranker`, or `llm` and relay the one-time console link.
+When the user asks to create or add an embedder, reranker, or LLM, follow the
+model-setup steps in `using-goodmem-memory`: call `goodmem_console_setup` with
+the matching `kind` and relay the one-time console link verbatim — never write
+code or collect provider keys in chat for this.

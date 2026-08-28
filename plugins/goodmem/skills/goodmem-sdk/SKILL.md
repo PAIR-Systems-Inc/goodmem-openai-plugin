@@ -1,9 +1,15 @@
 ---
 name: goodmem-sdk
-description: Complete SDK references for building GoodMem into applications. Use when the user wants to write code that integrates GoodMem — creating spaces, ingesting memories, semantic retrieval, RAG pipelines, or managing embedders/rerankers/LLMs — in Python (goodmem), TypeScript (@pairsystems/goodmem), Java (ai.pairsys:goodmem-java), or .NET (PairSystems.Goodmem.Client).
+description: Complete SDK references for building GoodMem into applications, in Python (goodmem), TypeScript (@pairsystems/goodmem), Java (ai.pairsys:goodmem-java), or .NET (PairSystems.Goodmem.Client). Use only when the user explicitly asks to write code that integrates GoodMem — spaces, ingestion, semantic retrieval, RAG pipelines. Default to Python unless they choose another language. Not for adding an embedder, reranker, or LLM to the user's own GoodMem instance — that is a one-time console link; follow using-goodmem-memory.
 ---
 
 # GoodMem SDK
+
+Two rules govern this skill. It applies only when the user has explicitly asked
+for code — building, scripting, or integrating; a request to add a model to
+their own GoodMem instance is console setup, handled by `using-goodmem-memory`
+with `goodmem_console_setup`, never by code. And when code is wanted, write
+Python by default; use TypeScript, Java, or .NET only when the user picks one.
 
 GoodMem is a memory and retrieval (RAG) service. Applications store content as
 **memories** inside **spaces**; GoodMem chunks and embeds the content

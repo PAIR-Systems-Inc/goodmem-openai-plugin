@@ -1,6 +1,6 @@
 ---
 name: using-goodmem-memory
-description: Recall, store, and manage knowledge in the user's GoodMem Cloud instance. Use when stored project or team knowledge may answer a question, or when the user asks to save or organize knowledge; use the SDK skill instead for application-development guidance.
+description: Recall, store, and manage knowledge in the user's GoodMem Cloud instance, and add or configure its models. Use when stored project or team knowledge may answer a question, when the user asks to save or organize knowledge, or when they ask to create, add, or set up an embedder, embedding model, reranker, or LLM on GoodMem — model setup is a one-time console link, never code. Use the SDK skill only when the user explicitly asks to write code.
 ---
 
 # Using GoodMem memory
@@ -45,8 +45,25 @@ For conversations, follow the `save-conversation` skill. For files, follow the
 `work-with-documents` skill.
 
 If space creation reports that no embedder exists, relay its one-time setup link
-exactly. On request, `goodmem_console_setup` with `kind` `embedder`, `reranker`,
-or `llm` creates the corresponding one-time GoodMem Cloud console link.
+exactly.
+
+## Add or change models — embedder, reranker, LLM
+
+On GoodMem, "create an LLM", "add an embedder", or "set up a reranker" means
+registering a model configuration on the user's GoodMem Cloud instance. It is a
+console action, identical on every surface:
+
+1. Call `goodmem_console_setup` with `kind` set to `embedder`, `reranker`, or
+   `llm`.
+2. Relay the returned link verbatim, noting it works once, expires in about
+   30 minutes, and asks for the user's own model provider API key on the page.
+3. When the user says they are done, retry whatever needed the model.
+
+Never write code, scaffold a project, or touch provider credentials for this —
+the API key belongs on the console page, not in the chat. An embedder makes
+memories searchable, a reranker sharpens retrieval order, and an LLM enables
+synthesized answers. Write integration code only when the user explicitly asks
+for code; then follow the `goodmem-sdk` skill.
 
 ## Processing and failures
 
