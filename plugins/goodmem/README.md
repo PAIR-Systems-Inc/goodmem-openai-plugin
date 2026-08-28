@@ -1,19 +1,25 @@
 # GoodMem Plugin
 
-This plugin packages GoodMem memory workflows for Codex in `plugins/goodmem`.
+This is the single GoodMem plugin package for OpenAI experiences. All hosts use
+the same hosted MCP gateway, OAuth connection, and selected GoodMem Cloud
+instance; the skills adapt their language only where the host interface differs.
 
 It currently includes these skills:
 
-- `goodmem-help`
-- `goodmem-memory-workflow`
+- `using-goodmem-memory`
+- `save-conversation`
+- `work-with-documents`
+- `goodmem-troubleshooting`
 - `goodmem-sdk`
 
 ## What It Covers
 
-- creating access-controlled memory spaces on the user's GoodMem Cloud instance
-- saving what the agent reads — notes, code, documents — as searchable memories
+- proactively recalling relevant project and team knowledge
+- saving requested conversations as self-contained question-and-answer pairs
+- saving readable document content as searchable memories
+- creating and organizing memory spaces on the user's GoodMem Cloud instance
 - semantic retrieval across spaces, with metadata filters and reranking
-- answering questions from stored memories, with sources
+- shared cloud connection and processing diagnostics
 - Python, TypeScript, Java, and .NET SDK references for building GoodMem into
   applications
 
@@ -27,10 +33,10 @@ with this shape:
 
 - `.codex-plugin/plugin.json`
   - required plugin manifest
-  - defines plugin metadata and points Codex at the plugin contents
+  - defines the canonical GoodMem identity and points hosts at plugin contents
 
 - `.mcp.json`
-  - points Codex at GoodMem's hosted MCP service
+  - points the host at GoodMem's hosted MCP service
   - remote streamable HTTP with OAuth: the user signs in with their GoodMem
     account in the browser — no API keys, no local server, no configuration
 
@@ -40,7 +46,7 @@ with this shape:
     version-stamped against the published packages
 
 - `assets/`
-  - logo and listing screenshots
+  - logo and listing assets
 
 - `LICENSE`
   - MIT, backing the manifest's license claim
@@ -48,9 +54,12 @@ with this shape:
 ## Notes
 
 This plugin is service-backed through `.mcp.json`: all tools are served by
-GoodMem's hosted gateway, the same service behind the GoodMem plugin for
-ChatGPT, and connect to the user's own GoodMem Cloud instance after a one-time
-browser sign-in.
+GoodMem's hosted gateway and connect to the user's own GoodMem Cloud instance
+after a one-time browser sign-in. There is no local GoodMem connection path.
+
+Behavior is shared across hosts. Authentication always uses the hosted OAuth
+flow, while SDK guidance activates only for development questions rather than
+during ordinary memory recall.
 
 The instance needs one embedder (the model that makes text searchable). When
 it has none, the failure carries a one-time setup link that opens the user's
@@ -58,7 +67,7 @@ console on the right screen; the skills instruct the agent to relay it
 verbatim.
 
 GoodMem stores text: the agent reads what the user shares and saves what it
-read. Destructive tools are labeled as such and remain subject to Codex's
+read. Destructive tools are labeled as such and remain subject to the host's
 approval flow.
 
 Support: [docs.goodmem.ai](https://docs.goodmem.ai) · [support@pairsys.ai](mailto:support@pairsys.ai)
