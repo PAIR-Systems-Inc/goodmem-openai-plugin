@@ -10,6 +10,13 @@ Use Python unless the user chooses another language. Setting up a model in the
 user's own instance is a console task: follow `using-goodmem-memory` and
 `goodmem_console_setup`.
 
+GoodMem stores memories inside spaces and chunks/embeds content for semantic
+retrieval, with optional reranking or LLM answers. SDKs wrap `{base_url}/v1`,
+using an `x-api-key` header with a `gm_…` key. Registering a known model through
+the SDK's convenience API auto-fills provider, endpoint, and dimensionality.
+Use space keys (`space_keys` in Python) for per-space filters and embedder weights;
+Python's `stream=False` collects retrieval events instead of streaming them.
+
 ## Read only the relevant reference
 
 1. Open the chosen language overview below. Use its tested example for a common

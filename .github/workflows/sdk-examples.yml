@@ -25,8 +25,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install supported SDK
         run: |
-          version=$(python -c 'import json; print(json.load(open("tools/sdk-refs/versions.json"))["packages"]["python"]["version"])')
-          python -m pip install "goodmem==$version" -r tools/sdk-refs/requirements-checks.txt
+          sdk_wheel=$(python -c 'import json; a=json.load(open("tools/sdk-refs/versions.json"))["packages"]["python"]["artifact"]; print(a["url"]+"#sha256="+a["sha256"])')
+          python -m pip install "$sdk_wheel" -r tools/sdk-refs/requirements-checks.txt
       - name: Check reference coverage, navigation, and context budgets
         run: |
           python tools/sdk-refs/freshness.py --offline

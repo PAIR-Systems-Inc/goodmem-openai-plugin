@@ -13,7 +13,7 @@ Streams semantic retrieval results with full feature support including context i
 AUTHORIZATION: Every requested space must grant LIST_MEMORY on that exact space and READ_MEMORY through DIRECT_MEMBERS_OF the space before retrieval begins.
 
 ```java
-RetrieveMemoryStream retrieve(String message, SpaceId[] spaceIds)
+RetrieveMemoryStream retrieve(String message, SpaceId... spaceIds)
 ```
 
 Convenience overload: retrieves from the listed spaces with no
@@ -25,7 +25,7 @@ Convenience overload: retrieves from the listed spaces with no
  `RetrieveMemoryRequest.Builder` instead.
 
 ```java
-RetrieveMemoryStream retrieve(String message, String[] spaceIds)
+RetrieveMemoryStream retrieve(String message, String... spaceIds)
 ```
 
 String-typed sibling of `retrieve(String, SpaceId...)` \u2014 accepts raw

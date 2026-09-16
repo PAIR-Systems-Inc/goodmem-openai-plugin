@@ -22,6 +22,10 @@ CACHE = Path(tempfile.gettempdir()) / "goodmem-sdk-refs"
 def assert_models(test, model_pages, data, language):
     for model in data["models"]:
         with test.subTest(model=model["name"]):
+            if model.get("utility"):
+                test.assertNotIn(model["name"], model_pages)
+                test.assertIn(model["declaration"], "\n".join(model_pages.values()))
+                continue
             test.assertIn(model["name"], model_pages)
             section = model_pages[model["name"]]
             if model.get("import"):
@@ -43,6 +47,11 @@ def assert_models(test, model_pages, data, language):
             for key in ("definition", "valueDeclaration"):
                 if model.get(key):
                     test.assertIn(model[key], section)
+            for field in model.get("effectiveFields", []):
+                test.assertIn(f'`{field["name"]}`', section)
+                test.assertIn(f'`{field["type"]}`', section)
+                if field["description"]:
+                    test.assertIn(generate.public_text(field["description"]).strip(), section)
             for key in ("bases", "variants"):
                 for name in model.get(key, []):
                     test.assertIn(f"`{name}`", section)
@@ -95,7 +104,7 @@ class PublicReferences(unittest.TestCase):
         data = generate.package_data(LANGUAGE, CACHE)
         self.assertGreater(len(data["models"]), 30)
         model_pages = {p.stem: p.read_text() for p in (REFS / LANGUAGE / "models").glob("*.md")}
-        self.assertEqual(set(model_pages), {model["name"] for model in data["models"]})
+        self.assertEqual(set(model_pages), {model["name"] for model in data["models"] if not model.get("utility")})
         assert_models(self, model_pages, data, LANGUAGE)
         methods = pages.operations(LANGUAGE, data, generate.javadoc_text)
         self.assertGreater(len(methods), 40)
@@ -152,6 +161,10 @@ class PublicReferences(unittest.TestCase):
         declarations = '''
 export interface GoodmemConfig { baseUrl: string; }
 export interface RequestOptions { timeoutMs?: number; }
+export type Prettify<T> = { [K in keyof T]: T[K] } & {};
+export type RequireExactlyOne<T, Keys extends keyof T> = {
+  [K in Keys]: Required<Pick<T, K>> & Partial<Record<Exclude<Keys, K>, never>>
+}[Keys];
 export declare const Mode: { readonly ACTIVE: "ACTIVE"; readonly INACTIVE: "INACTIVE"; };
 export type Mode = (typeof Mode)[keyof typeof Mode];
 export interface Nested {
@@ -164,9 +177,13 @@ export interface Base {
 }
 export interface Request extends Base { nested: Nested; mode?: Mode; }
 export type Choice = Request | { id: string };
+export type Thin = Prettify<Omit<Base, "labels"> & { labels: Record<string, string>; nested?: Nested }>;
+export type Exclusive = RequireExactlyOne<{ text: string; data: string }, "text" | "data">;
 export declare class SampleAPI {
   create(request: Choice, options?: RequestOptions): Promise<void>;
   create(id: string): Promise<void>;
+  update(request: Thin): Promise<void>;
+  choose(request: Exclusive): Promise<void>;
 }
 export declare class Goodmem { readonly sample: SampleAPI; }
 '''
@@ -176,7 +193,7 @@ export declare class Goodmem { readonly sample: SampleAPI; }
             result = subprocess.run(["node", str(generate.HERE / "inspect-typescript.mjs"), str(source)],
                                     check=True, capture_output=True, text=True)
         data = json.loads(result.stdout)
-        self.assertEqual(len(data["namespaces"][0]["methods"]), 2)
+        self.assertEqual(len(data["namespaces"][0]["methods"]), 4)
         models = {m["name"]: m for m in data["models"]}
         self.assertEqual(models["Request"]["bases"], ["Base"])
         self.assertEqual(models["Nested"]["fields"][0]["description"], "Kept field description.")
@@ -191,6 +208,24 @@ export declare class Goodmem { readonly sample: SampleAPI; }
         self.assertIn("create(id: string)", output["typescript/sample/create.md"])
         self.assertIn("[Nested](Nested.md)", sections["Request"])
         self.assertIn("`string | null`, required", sections["Nested"])
+        thin = {field["name"]: field for field in models["Thin"]["effectiveFields"]}
+        self.assertFalse(thin["labels"]["optional"], "Alias override must make labels required")
+        self.assertTrue(thin["nested"]["optional"])
+        self.assertIn("`Record<string, string>`, required", sections["Thin"])
+        self.assertNotIn("Prettify", sections)
+        self.assertNotIn("RequireExactlyOne", sections)
+        self.assertNotIn("[Prettify]", sections["Thin"])
+        self.assertEqual(models["Exclusive"]["effectiveFields"], [], "Do not flatten exclusive union branches")
+        self.assertIn(models["RequireExactlyOne"]["declaration"], sections["Exclusive"])
+
+    def test_java_varargs_are_preserved(self):
+        if LANGUAGE != "java":
+            self.skipTest("Java source parser runs in the Java CI job")
+        data = generate.java_data(CACHE)
+        signatures = [signature for namespace, _, signature, _ in data["methods"]
+                      if namespace == "memories" and "retrieve(" in signature]
+        self.assertIn("RetrieveMemoryStream retrieve(String message, String... spaceIds)", signatures)
+        self.assertIn("RetrieveMemoryStream retrieve(String message, SpaceId... spaceIds)", signatures)
 
 
 if __name__ == "__main__":

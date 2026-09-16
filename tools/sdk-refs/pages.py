@@ -48,6 +48,13 @@ def model_body(language, model, clean_doc):
     if model.get("definition") is not None:
         value = (model.get("valueDeclaration") or "")
         parts.append(f'```{FENCES[language]}\n{value}\n{model["declaration"]}\n```')
+        if model.get("effectiveFields"):
+            parts.append("Effective request fields (including inherited fields and overrides):\n\n" + "\n".join(
+                f'- `{f["name"]}` (`{f["type"]}`, {"optional" if f["optional"] else "required"}): {f["description"]}'
+                for f in model["effectiveFields"]))
+        if model.get("utilities"):
+            parts.append("Helper definitions for the constraints above (kept here to avoid extra page reads):\n\n```ts\n"
+                         + "\n".join(h["declaration"] for h in model["utilities"]) + "\n```")
     else:
         if model.get("fullName"):
             parts.append(f'`{model["fullName"]}`')
@@ -70,7 +77,7 @@ def model_body(language, model, clean_doc):
 
 def render(language, package, baseline, source, data, intro, examples, clean_doc, normalize):
     pages = {}
-    models = {m["name"]: m for m in data["models"]}
+    models = {m["name"]: m for m in data["models"] if not m.get("utility")}
     methods = operations(language, data, clean_doc)
     stamp = f'<!-- sdk-ref package={package["package"]} registry={package["registry"]} version={package["version"]} -->'
 

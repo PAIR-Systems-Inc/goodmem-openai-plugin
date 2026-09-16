@@ -1,10 +1,12 @@
 // Inspect the published declarations with the compiler, preserving overloads,
 // optional properties, union constraints, and nested request types.
-import fs from "node:fs";
 import ts from "typescript";
 
-const file = ts.createSourceFile(process.argv[2], fs.readFileSync(process.argv[2], "utf8"),
-  ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+const program = ts.createProgram([process.argv[2]], {
+  strict: true, skipLibCheck: true, target: ts.ScriptTarget.ES2022,
+});
+const checker = program.getTypeChecker();
+const file = program.getSourceFile(process.argv[2]);
 if (file.parseDiagnostics.length) throw new Error("Cannot parse published declarations");
 const declarations = new Map(file.statements.filter(s => s.name).map(s => [s.name.text, s]));
 const values = new Map(file.statements.filter(ts.isVariableStatement)
@@ -54,9 +56,33 @@ for (const name of pending) {
   const fields = ts.isInterfaceDeclaration(node) ? node.members.filter(ts.isPropertySignature).map(p => ({
     name: text(p.name), type: text(p.type), optional: !!p.questionToken, description: description(p),
   })) : [];
+  const utility = ts.isTypeAliasDeclaration(node) && !!node.typeParameters?.length;
+  const type = checker.getTypeAtLocation(node);
+  // Expand concrete object aliases only. Flattening a union would erase its
+  // branch-specific required/forbidden properties, so retain those declarations.
+  const effectiveFields = ts.isTypeAliasDeclaration(node) && !utility &&
+    !!(type.flags & ts.TypeFlags.Object) && !checker.isArrayType(type) && !checker.isTupleType(type)
+    ? checker.getPropertiesOfType(type).map(p => ({
+      name: p.name, optional: !!(p.flags & ts.SymbolFlags.Optional),
+      type: checker.typeToString(checker.getTypeOfSymbolAtLocation(p, node), node, ts.TypeFormatFlags.NoTruncation),
+      description: ts.displayPartsToString(p.getDocumentationComment(checker)),
+    })).sort((a, b) => a.name.localeCompare(b.name, "en")) : [];
   models.push({name, description: description(node), fields, declaration: text(node),
+    utility, effectiveFields, references: references(node),
     definition: ts.isTypeAliasDeclaration(node) ? text(node.type) : null,
     valueDeclaration: values.has(name) ? "export declare const " + text(values.get(name)) + ";" : null,
     bases: node.heritageClauses?.flatMap(h => h.types.map(text)) || []});
+}
+const byName = new Map(models.map(m => [m.name, m]));
+for (const model of models) {
+  const helpers = new Set();
+  const visit = name => {
+    const helper = byName.get(name);
+    if (!helper?.utility || helpers.has(name)) return;
+    helpers.add(name);
+    helper.references.forEach(visit);
+  };
+  model.references.forEach(visit);
+  model.utilities = [...helpers].sort().map(name => ({name, declaration: byName.get(name).declaration}));
 }
 process.stdout.write(JSON.stringify({namespaces, models: models.sort((a, b) => a.name.localeCompare(b.name, "en"))}));

@@ -21,6 +21,14 @@ export type EndpointAuthentication = Prettify<Pick<EndpointAuthenticationBase, "
 }>;
 ```
 
+Helper definitions for the constraints above (kept here to avoid extra page reads):
+
+```ts
+export type Prettify<T> = {
+    [K in keyof T]: T[K];
+} & {};
+```
+
 [TypeScript](../../typescript.md)
 
 Related types — open only those used by your request:
@@ -28,4 +36,3 @@ Related types — open only those used by your request:
 - [ApiKeyAuth](ApiKeyAuth.md)
 - [EndpointAuthenticationBase](EndpointAuthenticationBase.md)
 - [GcpAdcAuth](GcpAdcAuth.md)
-- [Prettify](Prettify.md)

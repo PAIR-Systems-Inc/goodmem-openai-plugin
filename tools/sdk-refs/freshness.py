@@ -21,12 +21,11 @@ def validate(refs, matrix):
     if {path.stem for path in refs.glob("*.md")} != LANGUAGES:
         raise ValueError("Exactly four SDK reference files are required")
     for language, package in packages.items():
-        if language != "python":
-            artifact = package["artifact"]
-            if not re.fullmatch(r"[0-9a-f]{64}", artifact["sha256"]):
-                raise ValueError(f"Missing artifact checksum: {language}")
-            if not artifact["url"].startswith("https://"):
-                raise ValueError(f"Artifact must use HTTPS: {language}")
+        artifact = package["artifact"]
+        if not re.fullmatch(r"[0-9a-f]{64}", artifact["sha256"]):
+            raise ValueError(f"Missing artifact checksum: {language}")
+        if not artifact["url"].startswith("https://"):
+            raise ValueError(f"Artifact must use HTTPS: {language}")
         expected = tuple(package[key] for key in ("package", "registry", "version"))
         for path in [refs / f"{language}.md", *sorted((refs / language).rglob("*.md"))]:
             lines = path.read_text().splitlines()

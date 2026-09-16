@@ -37,6 +37,14 @@ class InspectJava {
         return new Parsed(unit, type, DocTrees.instance(task));
     }
     static String encode(String text) { return Base64.getEncoder().encodeToString(text.getBytes(StandardCharsets.UTF_8)); }
+    static String parameter(VariableTree parameter) {
+        String type = parameter.getType().toString();
+        // javac represents varargs as an array type; its variable printer retains
+        // the ellipsis flag. Preserve it while leaving real array parameters alone.
+        if (type.endsWith("[]") && parameter.toString().endsWith("... " + parameter.getName()))
+            type = type.substring(0, type.length() - 2) + "...";
+        return type + " " + parameter.getName();
+    }
     static String description(Parsed parsed, Tree member) {
         var comment = parsed.docs.getDocCommentTree(TreePath.getPath(parsed.unit, member));
         if (comment == null) return "";
@@ -68,7 +76,7 @@ class InspectJava {
                         if (!(member instanceof MethodTree method) || method.getReturnType() == null
                                 || !method.getModifiers().getFlags().contains(Modifier.PUBLIC)
                                 || method.getModifiers().getFlags().contains(Modifier.STATIC)) continue;
-                        var params = String.join(", ", method.getParameters().stream().map(p -> p.getType() + " " + p.getName()).toList());
+                        var params = String.join(", ", method.getParameters().stream().map(InspectJava::parameter).toList());
                         method.getParameters().forEach(p -> modelsIn(p.getType().toString()));
                         var key = method.getName() + "(" + params + ")";
                         var doc = description(parsed, method);

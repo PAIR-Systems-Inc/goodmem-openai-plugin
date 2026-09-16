@@ -2,8 +2,7 @@
 
 Register a known catalog model using an upstream provider key from the environment.
 Read [create](../embedders/create.md), the
-[known-model request](../models/EmbeddersCreateKnownWithoutCredentialsRequest.md),
-[request fields](../models/EmbedderCreationRequest.md), and
+[known-model request](../models/EmbeddersCreateKnownWithoutCredentialsRequest.md), and
 [provider key options](../models/ProviderApiKeyOptions.md) when adapting this.
 The SDK fills provider settings from its model catalog. Attach the returned embedder ID
 when creating a space; registration alone does not attach it to existing spaces.

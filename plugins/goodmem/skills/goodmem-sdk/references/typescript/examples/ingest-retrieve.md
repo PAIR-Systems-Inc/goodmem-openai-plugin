@@ -4,8 +4,7 @@
 
 Use an existing space with an embedder. Read [create](../memories/create.md),
 [get](../memories/get.md), and [retrieve](../memories/retrieve.md) when adapting this.
-The relevant request types are [text memory](../models/MemoryCreateTextRequest.md),
-[memory metadata](../models/MemoryCreateMetadata.md), and
+The relevant request types are [text memory](../models/MemoryCreateTextRequest.md) and
 [retrieval options](../models/MemoriesRetrieveOptions.md).
 
 ```ts

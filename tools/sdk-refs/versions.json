@@ -3,7 +3,11 @@
     "python": {
       "package": "goodmem",
       "registry": "pypi",
-      "version": "0.1.34"
+      "version": "0.1.34",
+      "artifact": {
+        "url": "https://files.pythonhosted.org/packages/89/f0/12682e6fcf817b4e743768f7382f6b36c58805665a8ebebe68d2506af335/goodmem-0.1.34-py3-none-any.whl",
+        "sha256": "fdb722035b349e4453f7e2689e3a4373a1ee2f1a50e164829e511c6f044fa00f"
+      }
     },
     "typescript": {
       "package": "@pairsystems/goodmem",

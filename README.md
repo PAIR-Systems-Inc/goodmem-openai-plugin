@@ -58,7 +58,8 @@ Use Python 3.12 with the supported `goodmem` package, Node 22, JDK 21, and .NET 
 Install the parser and check dependencies, then regenerate all references:
 
 ```bash
-pip install goodmem==0.1.34 -r tools/sdk-refs/requirements-checks.txt
+sdk_wheel=$(python -c 'import json; a=json.load(open("tools/sdk-refs/versions.json"))["packages"]["python"]["artifact"]; print(a["url"]+"#sha256="+a["sha256"])')
+pip install "$sdk_wheel" -r tools/sdk-refs/requirements-checks.txt
 npm ci --ignore-scripts --prefix tools/sdk-refs
 python tools/sdk-refs/generate.py
 python tools/sdk-refs/generate.py --check
@@ -71,14 +72,18 @@ python tools/sdk-refs/context.py --report /tmp/sdk-context.json
 
 The public maintenance tools live under `tools/sdk-refs`; `scripts/` remains
 ignored for local internal tooling. Downloads and inspector build outputs stay
-in a temporary cache (override with `--cache`). Downloaded npm, Maven, and NuGet
-artifacts are SHA-256 pinned in the matrix. To update a package, record its public
+in a temporary cache (override with `--cache`). All four SDK artifacts, including
+the Python wheel installed by CI, are SHA-256 pinned in the matrix. To update a package, record its public
 artifact URL and checksum, regenerate, and review the changed methods and models.
 Python introspection uses the exact installed package version in the matrix.
 Edit overview/example templates under `tools/sdk-refs/templates`, not generated
 reference pages. `--check` catches changed, missing, and obsolete pages;
 regeneration removes obsolete generated pages and refuses to remove handwritten
 files. Overloads share one operation page; identical descriptions are emitted once.
+TypeScript object aliases include effective fields from the compiler's type
+checker. Union declarations retain their branch constraints; generic helper
+definitions stay inline rather than adding navigation hops. GitHub collapses
+generated reference diffs via `.gitattributes`.
 
 CI checks regeneration for all four languages, every extracted signature and
 request field, local links, reachability, and public source URLs. It compiles and
@@ -103,6 +108,8 @@ The document skills require a hosted gateway that exposes content continuation
 (`offset`, `next_offset`, `truncated`) and retrieval diagnostics (`warnings`,
 `skipped_spaces`, `synthesis_error`). Verify those tool schemas before distributing
 these skills. Merging or publishing a gateway image does not establish deployment.
+See the [host validation record](tools/sdk-refs/host-validation.md) for the Codex
+installation/refresh results and the remaining ChatGPT and gateway release checks.
 
 ## Support
 
