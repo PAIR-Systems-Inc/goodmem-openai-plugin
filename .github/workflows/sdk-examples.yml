@@ -22,13 +22,23 @@ jobs:
       - name: Install supported SDK
         run: |
           version=$(python -c 'import json; print(json.load(open("tools/sdk-refs/versions.json"))["packages"]["python"]["version"])')
-          python -m pip install "goodmem==$version"
-      - name: Check signatures and execute the ingestion example
+          python -m pip install "goodmem==$version" -r tools/sdk-refs/requirements-checks.txt
+      - name: Check reference coverage, navigation, and context budgets
         run: |
           python tools/sdk-refs/freshness.py --offline
           python tools/sdk-refs/test_python.py
           python tools/sdk-refs/generate.py --language python --check
-          python tools/sdk-refs/test_references.py
+          python tools/sdk-refs/test_references.py --language python
+          python tools/sdk-refs/test_context.py
+          python tools/sdk-refs/context.py --report "$RUNNER_TEMP/context-report.json"
+      - name: Execute all Python examples against HTTP fixtures
+        run: |
+          python tools/sdk-refs/prepare_examples.py --output "$RUNNER_TEMP/sdk-examples"
+          python tools/sdk-refs/test_client_example.py python --examples "$RUNNER_TEMP/sdk-examples"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdk-context-reading-traces
+          path: ${{ runner.temp }}/context-report.json
 
   compiled-examples:
     runs-on: ubuntu-latest
@@ -47,12 +57,12 @@ jobs:
         if: matrix.language == 'typescript'
         with:
           node-version: "22"
-      - name: Compile and run TypeScript example; check all documented method accesses
+      - name: Compile and run TypeScript examples; check all documented method accesses
         if: matrix.language == 'typescript'
         run: |
           npm --prefix "$RUNNER_TEMP/sdk-examples/typescript" install --ignore-scripts
           npm --prefix "$RUNNER_TEMP/sdk-examples/typescript" run build
-          python tools/sdk-refs/test_client_example.py typescript node "$RUNNER_TEMP/sdk-examples/typescript/example.js"
+          python tools/sdk-refs/test_client_example.py typescript --examples "$RUNNER_TEMP/sdk-examples"
       - name: Reproduce TypeScript reference and verify request fields
         if: matrix.language == 'typescript'
         run: |
@@ -68,11 +78,11 @@ jobs:
         if: matrix.language == 'java'
         with:
           gradle-version: "8.13"
-      - name: Compile and run Java ingestion example
+      - name: Compile and run Java examples
         if: matrix.language == 'java'
         run: |
           gradle --no-daemon --project-dir "$RUNNER_TEMP/sdk-examples/java" installDist
-          python tools/sdk-refs/test_client_example.py java "$RUNNER_TEMP/sdk-examples/java/build/install/goodmem-plugin-sdk-example/bin/goodmem-plugin-sdk-example"
+          python tools/sdk-refs/test_client_example.py java --examples "$RUNNER_TEMP/sdk-examples"
       - name: Reproduce Java reference from the published source JAR
         if: matrix.language == 'java'
         run: |
@@ -82,11 +92,11 @@ jobs:
         if: matrix.language == 'dotnet'
         with:
           dotnet-version: "8.0.x"
-      - name: Compile and run .NET pagination example
+      - name: Compile and run .NET examples
         if: matrix.language == 'dotnet'
         run: |
           dotnet build "$RUNNER_TEMP/sdk-examples/dotnet/Example.csproj" -c Release
-          python tools/sdk-refs/test_client_example.py dotnet dotnet "$RUNNER_TEMP/sdk-examples/dotnet/bin/Release/net8.0/Example.dll"
+          python tools/sdk-refs/test_client_example.py dotnet --examples "$RUNNER_TEMP/sdk-examples"
       - name: Reproduce .NET reference and verify request properties
         if: matrix.language == 'dotnet'
         run: |

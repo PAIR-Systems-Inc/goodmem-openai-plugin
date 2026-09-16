@@ -27,11 +27,12 @@ def validate(refs, matrix):
                 raise ValueError(f"Missing artifact checksum: {language}")
             if not artifact["url"].startswith("https://"):
                 raise ValueError(f"Artifact must use HTTPS: {language}")
-        lines = (refs / f"{language}.md").read_text().splitlines()
-        match = STAMP.fullmatch(lines[0]) if lines else None
         expected = tuple(package[key] for key in ("package", "registry", "version"))
-        if not match or match.groups() != expected:
-            raise ValueError(f"Missing or inconsistent reference stamp: {language}")
+        for path in [refs / f"{language}.md", *sorted((refs / language).rglob("*.md"))]:
+            lines = path.read_text().splitlines()
+            match = STAMP.fullmatch(lines[0]) if lines else None
+            if not match or match.groups() != expected:
+                raise ValueError(f"Missing or inconsistent reference stamp: {path.relative_to(refs)}")
     return packages
 
 

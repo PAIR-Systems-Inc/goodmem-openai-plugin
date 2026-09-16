@@ -65,24 +65,6 @@ def public_text(text):
     return re.sub(r"\n{3,}", "\n\n", text).rstrip() + "\n"
 
 
-def python_reference():
-    import goodmem
-    from goodmem import Goodmem
-    version = MATRIX["packages"]["python"]["version"]
-    if goodmem.__version__ != version:
-        raise ValueError(f"Install goodmem=={version} before generating")
-    catalogue = files("goodmem").joinpath("skills/reference.md").read_text()
-    names = re.findall(r"^#### `([\w.]+)\(", catalogue, re.M)
-    sections = ["## API reference\n\nSignatures and descriptions are inspected from the published package. Parameters are keyword-only.\n"]
-    with Goodmem(base_url="https://example.invalid", api_key="gm_reference_no_network") as client:
-        for name in names:
-            method = client
-            for part in name.split("."):
-                method = getattr(method, part)
-            sections.append(f"#### `{name}{inspect.signature(method)}`\n\n{inspect.getdoc(method) or ''}\n")
-    if len(names) < 40:
-        raise ValueError("Python namespace catalogue is incomplete")
-    return "\n".join(sections)
 
 
 def typescript_data(cache):
@@ -96,32 +78,6 @@ def typescript_data(cache):
     return json.loads(run(["node", str(HERE / "inspect-typescript.mjs"), str(path)]))
 
 
-def typescript_reference(data):
-    sections = ["## API reference\n\nRequest types, inherited fields, and nested types are included in [Request models](#request-models). Overloads retain the package's exact constraints.\n"]
-    for namespace in data["namespaces"]:
-        sections.append(f'## client.{namespace["name"]}\n')
-        groups = {}
-        for method in namespace["methods"]:
-            groups.setdefault(method["name"], []).append(method)
-        for name, overloads in groups.items():
-            sections.append(f'### client.{namespace["name"]}.{name}\n')
-            signatures = "\n".join("client." + namespace["name"] + "." + m["signature"] + ";" for m in overloads)
-            sections.append(f"```ts\n{signatures}\n```\n")
-            sections.extend(dict.fromkeys(m["description"] + "\n" for m in overloads if m["description"]))
-    sections.append("## Request models\n\nTypes below come from the published declarations. `?` permits omission; `null` is allowed only where listed. Interfaces can inherit fields from the named base types below.\n")
-    for model in data["models"]:
-        sections.append(f'### {model["name"]}\n\n{model["description"]}\n')
-        if model["definition"] is not None:
-            declaration = ((model["valueDeclaration"] + "\n") if model["valueDeclaration"] else "") + model["declaration"]
-            sections.append(f'```ts\n{declaration}\n```\n')
-        else:
-            if model["bases"]:
-                sections.append("Inherits: " + ", ".join(f"`{base}`" for base in model["bases"]) + ".\n")
-            for field in model["fields"]:
-                required = "optional" if field["optional"] else "required"
-                sections.append(f'- `{field["name"]}` (`{field["type"]}`, {required}): {field["description"]}')
-            sections.append("")
-    return "\n".join(sections)
 
 
 def dotnet_data(cache):
@@ -141,24 +97,6 @@ def dotnet_data(cache):
                            str(cache / "Goodmem.Client.xml")], env=env))
 
 
-def dotnet_reference(data):
-    sections = ["## API reference\n\nSignatures come from the published assembly; descriptions come from its XML documentation. Request properties and nested types are included in [Request models](#request-models).\n"]
-    for namespace in data["namespaces"]:
-        sections.append(f'## client.{namespace["name"]}\n')
-        for method in namespace["methods"]:
-            sections.append(f'### {method["name"]}\n\n```csharp\npublic {method["signature"]}\n```\n\n{method["description"]}\n')
-    sections.append("## Request models\n\nUse C# property names in object initializers. `required` means the compiler requires initialization; `?` indicates a nullable type. The server can impose additional conditional requirements described below. JSON names are shown where the package declares them.\n")
-    for model in sorted(data["models"], key=lambda m: m["name"]):
-        sections.append(f'### {model["name"]}\n\n`{model["fullName"]}`\n\n{model["description"]}\n')
-        for field in model["fields"]:
-            if model["isEnum"]:
-                sections.append(f'- `{field["name"]}`: {field["description"]}')
-            else:
-                required = ", required" if field["required"] else ""
-                wire = f' JSON: `{field["wire"]}`.' if field["wire"] else ""
-                sections.append(f'- `{field["name"]}` (`{field["type"]}`{required}): {field["description"]}{wire}')
-        sections.append("")
-    return "\n".join(sections)
 
 
 def java_data(cache):
@@ -192,73 +130,137 @@ def javadoc_text(doc):
     return html.unescape(re.sub(r"<[^>]+>", "", doc)).strip()
 
 
-def java_reference(data):
-    sections = ["## API reference\n\nDeclarations and descriptions come from the published source JAR. [Request models](#request-models) includes the record components, nested types, and enum constants needed for these calls. Prefer each request's `builder()` where available; typed IDs expose `from(String)`.\n"]
-    current = None
-    for namespace, key, signature, doc in data["methods"]:
-        if namespace != current:
-            current = namespace
-            sections.append(f"## client.{namespace}\n")
-        sections.append(f"### `{key}`\n\n```java\n{signature}\n```\n\n{javadoc_text(doc)}\n")
-    sections.append("## Request models\n\nRecord component names are also accessor names and, for requests with builders, builder setter names. Boxed types allow null; server requirements and constraints are documented per field.\n")
-    for model in data["models"]:
-        sections.append(f'### {model["name"]}\n\n{javadoc_text(model["description"])}\n')
-        if model["variants"]:
-            sections.append("Permitted implementations: " + ", ".join(f'`{v}`' for v in model["variants"]) + ".\n")
-        for field in model["fields"]:
-            sections.append(f'- `{field["name"]}` (`{field["type"]}`): {javadoc_text(field["description"])}')
-        sections.append("")
-    return "\n".join(sections)
+def python_data():
+    import enum
+    import types
+    import typing
+    import goodmem
+    from goodmem import Goodmem
+    from pydantic import BaseModel
+    if goodmem.__version__ != MATRIX['packages']['python']['version']:
+        raise ValueError('Install the supported Python package before generating')
+    catalogue = files('goodmem').joinpath('skills/reference.md').read_text()
+    names = re.findall(r'^#### `([\w.]+)\(', catalogue, re.M)
+    namespaces, pending, models = {}, {}, {}
+
+    def type_name(t):
+        origin, args = typing.get_origin(t), typing.get_args(t)
+        if isinstance(t, type) and t.__module__.startswith('goodmem') and issubclass(t, (BaseModel, enum.Enum)):
+            pending[t.__name__] = t
+            return t.__name__
+        if t is type(None):
+            return 'None'
+        if origin in (typing.Union, types.UnionType):
+            return ' | '.join(type_name(a) for a in args)
+        if origin is typing.Literal:
+            return 'Literal[' + ', '.join(repr(a) for a in args) + ']'
+        if origin:
+            return getattr(origin, '__name__', str(origin)) + '[' + ', '.join(type_name(a) for a in args) + ']'
+        return getattr(t, '__name__', str(t).replace('typing.', ''))
+
+    with Goodmem(base_url='https://example.invalid', api_key='gm_reference_no_network') as client:
+        for qualified in names:
+            namespace, name = qualified.rsplit('.', 1)
+            method = client
+            for part in qualified.split('.'):
+                method = getattr(method, part)
+            for param, annotation in typing.get_type_hints(method).items():
+                if param != 'return':
+                    type_name(annotation)
+            namespaces.setdefault(namespace, []).append({
+                'name': name, 'signature': qualified + str(inspect.signature(method)),
+                'description': inspect.getdoc(method) or '',
+            })
+    while set(pending) - set(models):
+        name = sorted(set(pending) - set(models))[0]
+        cls = pending[name]
+        fields = []
+        is_enum = issubclass(cls, enum.Enum)
+        if is_enum:
+            fields = [{'name': item.name, 'type': name, 'description': repr(item.value)} for item in cls]
+        else:
+            for field_name, field in cls.model_fields.items():
+                description = field.description or ''
+                # Pydantic validator reprs include process-specific function
+                # addresses. Only declarative constraints belong in a reference.
+                constraints = [str(m) for m in field.metadata
+                               if type(m).__module__ == 'annotated_types']
+                if constraints:
+                    description += ' Constraints: ' + ', '.join(constraints) + '.'
+                fields.append({'name': field_name, 'type': type_name(field.annotation),
+                               'description': description, 'required': field.is_required(),
+                               'optional': not field.is_required(), 'wire': field.alias})
+        models[name] = {'name': name, 'description': cls.__dict__.get('__doc__') or '',
+                        'fields': fields, 'isEnum': is_enum}
+    if len(names) < 40:
+        raise ValueError('Python namespace catalogue is incomplete')
+    return {'namespaces': [{'name': n, 'methods': m} for n, m in namespaces.items()],
+            'models': list(models.values())}
+
+
+def package_data(language, cache):
+    return python_data() if language == 'python' else {
+        'typescript': typescript_data, 'java': java_data, 'dotnet': dotnet_data,
+    }[language](cache)
 
 
 def generate(cache, languages=None):
+    import pages
     cache.mkdir(parents=True, exist_ok=True)
-    if set(MATRIX["packages"]) != LANGUAGES:
-        raise ValueError("The supported matrix must contain all four languages")
+    if set(MATRIX['packages']) != LANGUAGES:
+        raise ValueError('The supported matrix must contain all four languages')
     output = {}
-    for language in languages or MATRIX["packages"]:
-        package = MATRIX["packages"][language]
-        if language == "python":
-            body = python_reference()
-        elif language == "typescript":
-            body = typescript_reference(typescript_data(cache))
-        elif language == "dotnet":
-            body = dotnet_reference(dotnet_data(cache))
-        else:
-            body = java_reference(java_data(cache))
-        version = package["version"]
-        source = PUBLIC_PACKAGES[language].format(version=version)
-        intro = (HERE / "templates" / f"{language}.md").read_text().replace("@VERSION@", version)
-        stamp = f'<!-- sdk-ref package={package["package"]} registry={package["registry"]} version={version} -->'
-        header = (f'{stamp}\n<!-- Generated by tools/sdk-refs/generate.py from published packages. -->\n\n'
-                  f'This guide supports [{package["package"]} {version}]({source}). '
-                  f'Server guidance assumes GoodMem {MATRIX["server_baseline"]} or later; '
-                  'older servers may not expose all APIs.\n\n'
-                  '**API-key lifecycle:** `status=INACTIVE` and DELETE both permanently revoke a key. '
-                  'Revoked keys cannot become ACTIVE; issue a replacement key. '
-                  'Revocation requires `DELETE_API_KEY`; label edits require `UPDATE_API_KEY`.\n\n')
-        output[language] = public_text(header + intro.rstrip() + "\n\n" + body.rstrip() + "\n")
+    for language in languages or MATRIX['packages']:
+        package = MATRIX['packages'][language]
+        source = PUBLIC_PACKAGES[language].format(version=package['version'])
+        intro = (HERE / 'templates' / f'{language}.md').read_text().replace('@VERSION@', package['version'])
+        examples = {p.stem: p.read_text() for p in sorted((HERE / 'templates/examples' / language).glob('*.md'))}
+        output.update(pages.render(language, package, MATRIX['server_baseline'], source,
+                                   package_data(language, cache), intro, examples, javadoc_text, public_text))
     return output
+
+
+def synchronize(output, languages, check=False):
+    expected = {REFS / path for path in output}
+    actual = set()
+    for language in languages:
+        index = REFS / f'{language}.md'
+        if index.exists():
+            actual.add(index)
+        actual.update((REFS / language).rglob('*.md'))
+    obsolete_paths = actual - expected
+    if not check:
+        for obsolete in obsolete_paths:
+            if not obsolete.read_text().startswith('<!-- sdk-ref '):
+                raise ValueError(f'Refusing to remove an ungenerated file: {obsolete}')
+    stale = list(obsolete_paths)
+    for path, content in output.items():
+        target = REFS / path
+        if not target.exists() or target.read_text() != content:
+            stale.append(target)
+        if not check:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(content)
+    if not check:
+        for obsolete in obsolete_paths:
+            obsolete.unlink()
+    elif stale:
+        raise ValueError('Regenerate references: ' + ', '.join(str(p.relative_to(REFS)) for p in sorted(stale)))
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--cache", type=Path, default=Path(tempfile.gettempdir()) / "goodmem-sdk-refs")
-    parser.add_argument("--language", choices=sorted(LANGUAGES), action="append")
-    parser.add_argument("--check", action="store_true")
+    parser.add_argument('--cache', type=Path, default=Path(tempfile.gettempdir()) / 'goodmem-sdk-refs')
+    parser.add_argument('--language', choices=sorted(LANGUAGES), action='append')
+    parser.add_argument('--check', action='store_true')
     args = parser.parse_args()
-    stale = []
-    for language, content in generate(args.cache.resolve(), args.language).items():
-        path = REFS / f"{language}.md"
-        if args.check:
-            if not path.exists() or path.read_text() != content:
-                stale.append(str(path.relative_to(ROOT)))
-        else:
-            path.write_text(content)
-        print(f"{language}: {len(content.splitlines())} lines")
-    if stale:
-        raise SystemExit("Regenerate references: " + ", ".join(stale))
+    languages = args.language or list(MATRIX['packages'])
+    output = generate(args.cache.resolve(), languages)
+    synchronize(output, languages, args.check)
+    for language in languages:
+        group = [s for path, s in output.items() if path == language + '.md' or path.startswith(language + '/')]
+        print(f'{language}: {len(group)} pages; {sum(len(s.encode()) for s in group)} bytes on disk')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

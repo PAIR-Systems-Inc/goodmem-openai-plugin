@@ -1,28 +1,16 @@
-# GoodMem .NET SDK
-
 Install `dotnet add package PairSystems.Goodmem.Client --version @VERSION@`
-(.NET 8+). The client is asynchronous and disposable; request models live in
-`Goodmem.Client.Models`, options in `Goodmem.Client.Api`.
-
-```csharp
-using Goodmem.Client;
-
-var baseUrl = Environment.GetEnvironmentVariable("GOODMEM_BASE_URL")
-    ?? throw new InvalidOperationException("GOODMEM_BASE_URL is required");
-using var client = new GoodmemClient(new GoodmemClientOptions {
-    BaseUrl = baseUrl,
-    ApiKey = Environment.GetEnvironmentVariable("GOODMEM_API_KEY"),
-});
-await foreach (var space in client.Spaces.ListAsync())
-    Console.WriteLine(space.SpaceId);
-```
+(.NET 8+). Construct a disposable `GoodmemClient` with `GoodmemClientOptions`
+containing `BaseUrl` and `ApiKey` from environment/configuration. Request models
+live in `Goodmem.Client.Models`; query options live in `Goodmem.Client.Api`.
 
 Paginated APIs, including `ApiKeys.ListAsync`, return `IAsyncEnumerable<T>`;
 `await foreach` follows cursors. Retrieval also streams via `IAsyncEnumerable`.
-Methods accept `CancellationToken` for deadlines/cancellation. After creation,
-poll `Memories.GetAsync` with a deadline, stop on FAILED, and retrieve only after
-COMPLETED. See the Python example in [the SDK skill](../SKILL.md) for the flow.
+Methods accept `CancellationToken` for cancellation/deadlines.
 
-`Goodmem.Client.Errors.ApiException` carries HTTP failures and typed subclasses;
-`NetworkException` represents transport failures. Avoid logging raw provider
-error bodies or keys. Space access uses policies; no public-read creation flag.
+Model pages show C# property names and JSON wire names. `required` requires
+initialization; `?` permits null. The server can impose the documented conditional
+requirements. Follow nested type links only when using those fields.
+
+`Goodmem.Client.Errors.ApiException` carries HTTP failures with typed subclasses;
+`NetworkException` represents transport failures. Preserve passages alongside
+nonfatal synthesis statuses, and avoid logging raw provider errors or keys.

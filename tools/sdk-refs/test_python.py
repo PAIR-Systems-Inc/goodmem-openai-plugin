@@ -7,6 +7,7 @@ import io
 import json
 import os
 import re
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -61,12 +62,13 @@ class Examples(unittest.TestCase):
         def client(**_):
             return Goodmem(http_client=httpx.Client(base_url="https://example.invalid", transport=httpx.MockTransport(handler)))
 
-        snippet = re.search(r"```python\n(.*?)\n```", SKILL.read_text(), re.S)[1]
+        example = REFS / "python/examples/ingest-retrieve.md"
+        snippet = re.search(r"```python\n(.*?)\n```", example.read_text(), re.S)[1]
         output = io.StringIO()
         with patch("goodmem.Goodmem", client), patch("time.sleep"), patch("time.monotonic", now), patch.dict(os.environ, {
             "GOODMEM_BASE_URL": "https://example.invalid", "GOODMEM_API_KEY": "gm_fake", "GOODMEM_SPACE_ID": SPACE,
         }), contextlib.redirect_stdout(output):
-            exec(compile(snippet, str(SKILL), "exec"), {})
+            exec(compile(snippet, str(example), "exec"), {})
         return calls, output.getvalue()
 
     def test_waits_for_indexing(self):
@@ -84,7 +86,10 @@ class Examples(unittest.TestCase):
 
     def test_documented_python_parameters_exist_in_the_published_package(self):
         self.assertEqual(goodmem.__version__, MATRIX["packages"]["python"]["version"])
-        methods = re.findall(r"^#### `([\w.]+)\((.*?)\)(?: -> .*?)?`", (REFS / "python.md").read_text(), re.M)
+        methods = []
+        for path in (REFS / "python").glob("*/*.md"):
+            if path.parent.name not in {"models", "examples"}:
+                methods.extend(re.findall(r"^([\w.]+)\((.*?)\)(?: -> .*?)?$", path.read_text(), re.M))
         self.assertGreater(len(methods), 40)
         with Goodmem(base_url="https://example.invalid", api_key="gm_fake") as client:
             for name, params in methods:
@@ -105,9 +110,13 @@ class Freshness(unittest.TestCase):
         spec.loader.exec_module(freshness)
         with tempfile.TemporaryDirectory() as directory:
             refs = Path(directory)
-            for language in MATRIX["packages"]:
-                (refs / f"{language}.md").write_text((REFS / f"{language}.md").read_text())
+            shutil.copytree(REFS, refs, dirs_exist_ok=True)
             freshness.validate(refs, MATRIX)
+            detail = refs / "python/memories/create.md"
+            detail.write_text(detail.read_text().replace("version=0.1.34", "version=0.0.0"))
+            with self.assertRaises(ValueError):
+                freshness.validate(refs, MATRIX)
+            detail.write_text((REFS / "python/memories/create.md").read_text())
             (refs / "python.md").write_text("# unstamped\n")
             with self.assertRaises(ValueError):
                 freshness.validate(refs, MATRIX)
