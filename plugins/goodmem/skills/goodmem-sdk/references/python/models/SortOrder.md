@@ -4,6 +4,10 @@
 
 SortOrder
 
+```python
+from goodmem.models import SortOrder
+```
+
 - `ASCENDING`: 'ASCENDING'
 - `DESCENDING`: 'DESCENDING'
 - `SORT_ORDER_UNSPECIFIED`: 'SORT_ORDER_UNSPECIFIED'

@@ -4,6 +4,10 @@
 
 OCR input format hint.
 
+```python
+from goodmem.models import OcrInputFormat
+```
+
 - `AUTO`: 'AUTO'
 - `PDF`: 'PDF'
 - `TIFF`: 'TIFF'

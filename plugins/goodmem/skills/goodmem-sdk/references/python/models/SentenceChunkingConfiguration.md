@@ -4,6 +4,10 @@
 
 Sentence-based chunking strategy with language detection support
 
+```python
+from goodmem.models import SentenceChunkingConfiguration
+```
+
 - `max_chunk_size` (`int`, required): Maximum size of a chunk JSON: `maxChunkSize`.
 - `min_chunk_size` (`int`, required): Minimum size before creating a new chunk JSON: `minChunkSize`.
 - `enable_language_detection` (`bool | None`, optional): Whether to detect language for better segmentation JSON: `enableLanguageDetection`.

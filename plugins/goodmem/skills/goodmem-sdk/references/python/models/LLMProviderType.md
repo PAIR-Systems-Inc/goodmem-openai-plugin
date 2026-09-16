@@ -4,6 +4,10 @@
 
 LLM provider types
 
+```python
+from goodmem.models import LLMProviderType
+```
+
 - `OPENAI`: 'OPENAI'
 - `LITELLM_PROXY`: 'LITELLM_PROXY'
 - `OPEN_ROUTER`: 'OPEN_ROUTER'

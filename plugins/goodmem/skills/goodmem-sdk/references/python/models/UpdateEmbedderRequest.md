@@ -4,6 +4,10 @@
 
 Request body for updating an existing Embedder. Only fields that should be updated need to be included. supportedModalities is creation-time only and cannot be changed here.
 
+```python
+from goodmem.models import UpdateEmbedderRequest
+```
+
 - `display_name` (`str | None`, optional): User-facing name of the embedder JSON: `displayName`.
 - `description` (`str | None`, optional): Description of the embedder
 - `endpoint_url` (`str | None`, optional): Replacement base HTTP(S) endpoint. Omit to preserve the stored value. Gemini endpoint URLs must not contain query parameters. JSON: `endpointUrl`.

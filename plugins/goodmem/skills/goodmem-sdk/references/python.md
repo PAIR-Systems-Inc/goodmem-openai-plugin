@@ -12,7 +12,7 @@ Methods use keyword arguments. `Page`/`AsyncPage` iteration follows cursors,
 including `apikeys.list`. Retrieval is a context-managed stream; `stream=False`
 collects events. Preserve usable passages when a status reports synthesis failure.
 
-Models are exported from `goodmem.models`. Model pages show Python field names;
+Model pages give the exact public import and Python field names;
 optional fields can be omitted and `None` is allowed only where listed. Use the
 operation signature to distinguish a flattened keyword API from a model argument.
 

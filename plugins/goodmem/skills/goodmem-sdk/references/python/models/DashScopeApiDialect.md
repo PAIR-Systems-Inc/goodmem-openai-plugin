@@ -4,6 +4,10 @@
 
 DashScope request and response API dialect
 
+```python
+from goodmem.models import DashScopeApiDialect
+```
+
 - `UNSPECIFIED`: 'UNSPECIFIED'
 - `EMBEDDING_NATIVE_TEXT`: 'EMBEDDING_NATIVE_TEXT'
 - `EMBEDDING_NATIVE_CONTENTS`: 'EMBEDDING_NATIVE_CONTENTS'

@@ -4,6 +4,10 @@
 
 One operation, selector, and optional assigned resource.
 
+```python
+from goodmem.models import AccessPolicyRule
+```
+
 - `operation` (`Operation | None`, required): Protected operation.
 - `selector` (`Selector | None`, required): Resource-selection semantics.
 - `assigned_resource` (`AccessPolicyTarget | None`, optional): Required exactly for EXACT and DIRECT_MEMBERS_OF selectors. JSON: `assignedResource`.

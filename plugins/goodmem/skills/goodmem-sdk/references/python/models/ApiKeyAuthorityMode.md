@@ -4,6 +4,10 @@
 
 INHERIT_SUBJECT follows a human subject's live authority. SCOPED intersects the subject's live authority with an immutable, nonempty issuance ceiling.
 
+```python
+from goodmem.models import ApiKeyAuthorityMode
+```
+
 - `INHERIT_SUBJECT`: 'INHERIT_SUBJECT'
 - `SCOPED`: 'SCOPED'
 

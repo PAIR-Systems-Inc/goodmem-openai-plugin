@@ -4,6 +4,10 @@
 
 Content modality types supported by embedders
 
+```python
+from goodmem.models import Modality
+```
+
 - `TEXT`: 'TEXT'
 - `IMAGE`: 'IMAGE'
 - `AUDIO`: 'AUDIO'

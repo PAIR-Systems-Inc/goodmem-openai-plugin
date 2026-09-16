@@ -4,6 +4,10 @@
 
 Request body for updating an existing LLM. All fields are optional - only specified fields will be updated. supportedModalities replaces the stored set only when the array contains at least one value; empty or omitted leaves it unchanged and does not count as an update by itself.
 
+```python
+from goodmem.models import LLMUpdateRequest
+```
+
 - `display_name` (`str | None`, optional): Update display name JSON: `displayName`.
 - `description` (`str | None`, optional): Update description
 - `endpoint_url` (`str | None`, optional): Update endpoint base URL (OpenAI-compatible base, typically ends with /v1) JSON: `endpointUrl`.

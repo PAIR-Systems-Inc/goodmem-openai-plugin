@@ -4,6 +4,10 @@
 
 Updates explicitly present profile fields. Empty username or displayName clears that optional field; an omitted field remains unchanged.
 
+```python
+from goodmem.models import UpdateUserRequest
+```
+
 - `email` (`str | None`, optional): Replacement email. A present empty value is invalid.
 - `username` (`str | None`, optional): Replacement username. An empty string clears the username.
 - `display_name` (`str | None`, optional): Replacement display name. An empty string clears the display name. JSON: `displayName`.

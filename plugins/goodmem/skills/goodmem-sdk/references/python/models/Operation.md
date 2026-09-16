@@ -4,6 +4,10 @@
 
 Operation
 
+```python
+from goodmem.models import Operation
+```
+
 - `CREATE_USER`: 'CREATE_USER'
 - `READ_USER`: 'READ_USER'
 - `UPDATE_USER`: 'UPDATE_USER'

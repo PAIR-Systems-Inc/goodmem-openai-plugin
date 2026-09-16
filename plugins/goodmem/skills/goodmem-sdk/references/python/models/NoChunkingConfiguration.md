@@ -4,4 +4,8 @@
 
 No chunking strategy - preserves original content as a single unit
 
+```python
+from goodmem.models import NoChunkingConfiguration
+```
+
 [Python](../../python.md)

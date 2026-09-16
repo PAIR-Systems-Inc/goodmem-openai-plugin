@@ -102,6 +102,15 @@ class Examples(unittest.TestCase):
                     documented = {arg.arg for arg in args.args + args.kwonlyargs}
                     self.assertLessEqual(documented, set(signature.parameters))
 
+    def test_documented_model_imports_are_public_and_work(self):
+        for path in (REFS / "python/models").glob("*.md"):
+            with self.subTest(model=path.stem):
+                match = re.search(r"^from goodmem(?:\.models)? import (\w+)$", path.read_text(), re.M)
+                self.assertIsNotNone(match)
+                namespace = {}
+                exec(match[0], namespace)
+                self.assertEqual(namespace[match[1]].__name__, path.stem)
+
 
 class Freshness(unittest.TestCase):
     def test_missing_or_mismatched_stamp_is_an_error(self):

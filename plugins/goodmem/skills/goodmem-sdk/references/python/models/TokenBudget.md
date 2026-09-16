@@ -4,6 +4,10 @@
 
 Soft token budget hint for retrieve request processing.
 
+```python
+from goodmem.models import TokenBudget
+```
+
 - `tokens` (`int`, required): Token count for the budget. Must be positive.
 
 [Python](../../python.md)

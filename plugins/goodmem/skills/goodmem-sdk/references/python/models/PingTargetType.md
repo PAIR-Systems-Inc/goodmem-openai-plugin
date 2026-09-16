@@ -4,6 +4,10 @@
 
 Target types for ping operations
 
+```python
+from goodmem.models import PingTargetType
+```
+
 - `TARGET_TYPE_UNSPECIFIED`: 'TARGET_TYPE_UNSPECIFIED'
 - `EMBEDDER`: 'EMBEDDER'
 - `RERANKER`: 'RERANKER'

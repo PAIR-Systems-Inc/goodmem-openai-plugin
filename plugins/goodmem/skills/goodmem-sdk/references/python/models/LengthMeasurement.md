@@ -4,6 +4,10 @@
 
 Strategy for measuring chunk length during text splitting
 
+```python
+from goodmem.models import LengthMeasurement
+```
+
 - `CHARACTER_COUNT`: 'CHARACTER_COUNT'
 - `TOKEN_COUNT`: 'TOKEN_COUNT'
 - `CUSTOM`: 'CUSTOM'

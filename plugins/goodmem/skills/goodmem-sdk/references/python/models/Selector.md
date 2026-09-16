@@ -4,6 +4,10 @@
 
 Selector
 
+```python
+from goodmem.models import Selector
+```
+
 - `ANY`: 'ANY'
 - `OWN`: 'OWN'
 - `EXACT`: 'EXACT'

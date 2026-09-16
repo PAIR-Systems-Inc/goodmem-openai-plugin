@@ -4,6 +4,10 @@
 
 Recursive hierarchical chunking strategy with configurable separators and overlap
 
+```python
+from goodmem.models import RecursiveChunkingConfiguration
+```
+
 - `chunk_size` (`int`, required): Maximum size of a chunk (should be ≤ context window) JSON: `chunkSize`.
 - `chunk_overlap` (`int`, required): Sliding overlap between chunks JSON: `chunkOverlap`.
 - `separators` (`list[str] | None`, optional): Hierarchical separator list (order = preference)

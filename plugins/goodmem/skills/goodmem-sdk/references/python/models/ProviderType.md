@@ -4,6 +4,10 @@
 
 Embedding provider types
 
+```python
+from goodmem.models import ProviderType
+```
+
 - `OPENAI`: 'OPENAI'
 - `VLLM`: 'VLLM'
 - `TEI`: 'TEI'

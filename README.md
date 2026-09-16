@@ -94,7 +94,8 @@ and **6,000 per representative workflow reading path**, including the skill and
 language overview. Counts use pinned `tiktoken==0.12.0` with `o200k_base` as a
 consistent measurement proxy. Each workflow follows the overview's recipe and
 its explicitly linked operations/models; unrelated optional types are not loaded.
-The CI artifact `sdk-context-reading-traces` records every file read and its cost.
+The CI artifacts `sdk-context-reading-traces-python-*` record every file read and
+its cost; Python 3.12 and 3.13 must reproduce identical reference pages.
 These are deterministic reading paths, not an autonomous-agent evaluation or a
 prediction of host billing; host prompts, tool output, and conversation add context.
 

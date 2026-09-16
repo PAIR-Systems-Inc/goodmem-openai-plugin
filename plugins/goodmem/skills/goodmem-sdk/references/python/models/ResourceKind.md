@@ -4,6 +4,10 @@
 
 ResourceKind
 
+```python
+from goodmem.models import ResourceKind
+```
+
 - `INSTANCE`: 'INSTANCE'
 - `USER`: 'USER'
 - `SERVICE_IDENTITY`: 'SERVICE_IDENTITY'

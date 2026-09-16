@@ -4,6 +4,10 @@
 
 Capabilities and features supported by an LLM service
 
+```python
+from goodmem.models import LLMCapabilities
+```
+
 - `supports_chat` (`bool | None`, optional): Supports conversational/chat completion format with message roles JSON: `supportsChat`.
 - `supports_completion` (`bool | None`, optional): Supports raw text completion with prompt continuation JSON: `supportsCompletion`.
 - `supports_function_calling` (`bool | None`, optional): Supports function/tool calling with structured responses JSON: `supportsFunctionCalling`.

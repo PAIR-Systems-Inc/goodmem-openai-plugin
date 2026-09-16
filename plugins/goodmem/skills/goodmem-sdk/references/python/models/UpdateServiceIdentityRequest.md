@@ -4,6 +4,10 @@
 
 Updates explicitly present profile fields. Empty description clears it; omitted fields remain unchanged. Ownership is changed only through the transfer endpoint.
 
+```python
+from goodmem.models import UpdateServiceIdentityRequest
+```
+
 - `display_name` (`str | None`, optional): Replacement display name. A present blank value is invalid. JSON: `displayName`.
 - `description` (`str | None`, optional): Replacement description. An empty string clears the description.
 - `replace_labels` (`dict[str, str] | None`, optional): Complete replacement label map; an empty map clears all labels and is mutually exclusive with merge_labels. At most 20 entries; keys and values contain at most 255 characters; keys use [a-z0-9._-]. JSON: `replaceLabels`.

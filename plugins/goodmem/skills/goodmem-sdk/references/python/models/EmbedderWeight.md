@@ -4,6 +4,10 @@
 
 Per-embedder weight override for retrieval operations.
 
+```python
+from goodmem.models import EmbedderWeight
+```
+
 - `embedder_id` (`str`, required): The UUID for the embedder. JSON: `embedderId`.
 - `weight` (`float`, required): The weight to apply to this embedder's results. Can be positive, negative, or zero.
 

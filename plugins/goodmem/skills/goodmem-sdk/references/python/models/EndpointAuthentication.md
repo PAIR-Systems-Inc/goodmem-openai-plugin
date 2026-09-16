@@ -4,6 +4,10 @@
 
 Structured credential payload describing how GoodMem should authenticate with an upstream provider.
 
+```python
+from goodmem.models import EndpointAuthentication
+```
+
 - `kind` (`CredentialKind | None`, required): Selected credential strategy
 - `api_key` (`ApiKeyAuth | None`, optional): Configuration when kind is CREDENTIAL_KIND_API_KEY JSON: `apiKey`.
 - `gcp_adc` (`GcpAdcAuth | None`, optional): Configuration when kind is CREDENTIAL_KIND_GCP_ADC JSON: `gcpAdc`.

@@ -4,6 +4,10 @@
 
 A single delete selector: either memoryId or filterSelector
 
+```python
+from goodmem.models import BatchDeleteMemorySelectorRequest
+```
+
 - `memory_id` (`str | None`, optional): Deletes one specific memory by UUID JSON: `memoryId`.
 - `filter_selector` (`FilteredDeleteMemorySelectorRequest | None`, optional): Deletes a filtered set of memories within a specific space JSON: `filterSelector`.
 

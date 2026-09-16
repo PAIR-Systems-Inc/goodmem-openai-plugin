@@ -190,8 +190,14 @@ def python_data():
                 fields.append({'name': field_name, 'type': type_name(field.annotation),
                                'description': description, 'required': field.is_required(),
                                'optional': not field.is_required(), 'wire': field.alias})
-        models[name] = {'name': name, 'description': cls.__dict__.get('__doc__') or '',
-                        'fields': fields, 'isEnum': is_enum}
+        # Python 3.13 strips docstring indentation earlier than 3.12 does.
+        # Normalize explicitly rather than depending on interpreter behavior.
+        description = inspect.cleandoc(cls.__dict__.get('__doc__') or '')
+        import_from = 'goodmem' if getattr(goodmem, name, None) is cls else 'goodmem.models'
+        if import_from == 'goodmem.models' and getattr(goodmem.models, name, None) is not cls:
+            raise ValueError(f'No public import found for Python input model: {name}')
+        models[name] = {'name': name, 'description': description, 'fields': fields,
+                        'isEnum': is_enum, 'import': f'from {import_from} import {name}'}
     if len(names) < 40:
         raise ValueError('Python namespace catalogue is incomplete')
     return {'namespaces': [{'name': n, 'methods': m} for n, m in namespaces.items()],

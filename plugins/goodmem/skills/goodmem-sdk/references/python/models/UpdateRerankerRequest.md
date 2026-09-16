@@ -4,6 +4,10 @@
 
 Request body for updating an existing Reranker. Only fields that should be updated need to be included. supportedModalities replaces the stored set only when the array contains at least one value; empty or omitted leaves it unchanged and does not count as an update by itself.
 
+```python
+from goodmem.models import UpdateRerankerRequest
+```
+
 - `display_name` (`str | None`, optional): User-facing name of the reranker JSON: `displayName`.
 - `description` (`str | None`, optional): Description of the reranker
 - `endpoint_url` (`str | None`, optional): API endpoint URL JSON: `endpointUrl`.

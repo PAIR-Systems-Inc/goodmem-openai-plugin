@@ -43,6 +43,8 @@ def operation_body(language, namespace, name, overloads):
 def model_body(language, model, clean_doc):
     description = clean_doc(model["description"]) if language == "java" else model["description"]
     parts = [f'# {model["name"]}', description]
+    if model.get("import"):
+        parts.append(f'```{FENCES[language]}\n{model["import"]}\n```')
     if model.get("definition") is not None:
         value = (model.get("valueDeclaration") or "")
         parts.append(f'```{FENCES[language]}\n{value}\n{model["declaration"]}\n```')

@@ -24,6 +24,8 @@ def assert_models(test, model_pages, data, language):
         with test.subTest(model=model["name"]):
             test.assertIn(model["name"], model_pages)
             section = model_pages[model["name"]]
+            if model.get("import"):
+                test.assertIn(model["import"], section)
             description = generate.javadoc_text(model["description"]) if language == "java" else model["description"]
             if description:
                 test.assertIn(generate.public_text(description).strip(), section)

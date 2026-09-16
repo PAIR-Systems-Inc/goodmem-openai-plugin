@@ -4,6 +4,10 @@
 
 A typed access-policy target. resourceId is omitted for INSTANCE and required otherwise.
 
+```python
+from goodmem.models import AccessPolicyTarget
+```
+
 - `kind` (`ResourceKind | None`, required): Concrete target kind.
 - `resource_id` (`str | None`, optional): Concrete resource UUID; omitted for the singleton INSTANCE target. JSON: `resourceId`.
 

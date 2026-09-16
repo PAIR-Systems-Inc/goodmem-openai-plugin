@@ -4,6 +4,10 @@
 
 Credential kinds supported for upstream endpoint authentication.
 
+```python
+from goodmem.models import CredentialKind
+```
+
 - `CREDENTIAL_KIND_UNSPECIFIED`: 'CREDENTIAL_KIND_UNSPECIFIED'
 - `CREDENTIAL_KIND_API_KEY`: 'CREDENTIAL_KIND_API_KEY'
 - `CREDENTIAL_KIND_GCP_ADC`: 'CREDENTIAL_KIND_GCP_ADC'

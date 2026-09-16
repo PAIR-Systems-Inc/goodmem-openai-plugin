@@ -4,6 +4,10 @@
 
 Type of embedding distribution produced by the embedder
 
+```python
+from goodmem.models import DistributionType
+```
+
 - `DENSE`: 'DENSE'
 - `SPARSE`: 'SPARSE'
 

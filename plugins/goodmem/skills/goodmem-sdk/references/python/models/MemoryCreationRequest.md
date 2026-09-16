@@ -9,6 +9,10 @@ defaults to ``None``.  When passed to ``batch_create``, the SDK infers
 ``"text/plain"`` when ``original_content`` is a string and no explicit
 ``content_type`` is provided.
 
+```python
+from goodmem import MemoryCreationRequest
+```
+
 - `memory_id` (`str | None`, optional): Optional client-provided UUID for the memory. If omitted, the server generates one. Returns ALREADY_EXISTS if the ID is already in use. JSON: `memoryId`.
 - `space_id` (`str`, required): ID of the space where this memory will be stored JSON: `spaceId`.
 - `original_content` (`str | None`, optional): Original content as plain text (use either this or original_content_b64) JSON: `originalContent`.
