@@ -11,3 +11,6 @@ scripts/
 # The hosted gateway is maintained separately; this repository holds only the
 # public plugin bundles. A local working copy may remain here untracked.
 gateway/
+
+# editor workspace files — local to one machine, not part of the bundle
+*.code-workspace
