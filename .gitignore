@@ -4,8 +4,10 @@ node_modules/
 *.tgz
 .env
 
-# internal tooling — never committed
-scripts/
+# SDK maintenance and regression scripts are part of the repository.
+__pycache__/
+bin/
+obj/
 
 # The gateway service lives in the private repo
 # The hosted gateway is maintained separately; this repository holds only the

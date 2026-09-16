@@ -1,0 +1,76 @@
+name: SDK example contracts
+
+on:
+  pull_request:
+    paths:
+      - "plugins/goodmem/skills/**"
+      - "scripts/sdk-refs/**"
+      - ".github/workflows/sdk-examples.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install supported SDK
+        run: |
+          version=$(python -c 'import json; print(json.load(open("scripts/sdk-refs/versions.json"))["packages"]["python"]["version"])')
+          python -m pip install "goodmem==$version"
+      - name: Check signatures and execute the ingestion example
+        run: |
+          python scripts/sdk-refs/freshness.py --offline
+          python scripts/sdk-refs/test_python.py
+
+  compiled-examples:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [typescript, java, dotnet]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Extract shipped examples with supported package versions
+        run: python scripts/sdk-refs/prepare_examples.py --output "$RUNNER_TEMP/sdk-examples"
+      - uses: actions/setup-node@v4
+        if: matrix.language == 'typescript'
+        with:
+          node-version: "22"
+      - name: Compile and run TypeScript example; check all documented method accesses
+        if: matrix.language == 'typescript'
+        run: |
+          npm --prefix "$RUNNER_TEMP/sdk-examples/typescript" install --ignore-scripts
+          npm --prefix "$RUNNER_TEMP/sdk-examples/typescript" run build
+          python scripts/sdk-refs/test_client_example.py typescript node "$RUNNER_TEMP/sdk-examples/typescript/example.js"
+      - uses: actions/setup-java@v4
+        if: matrix.language == 'java'
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@v4
+        if: matrix.language == 'java'
+        with:
+          gradle-version: "8.13"
+      - name: Compile and run Java ingestion example
+        if: matrix.language == 'java'
+        run: |
+          gradle --no-daemon --project-dir "$RUNNER_TEMP/sdk-examples/java" installDist
+          python scripts/sdk-refs/test_client_example.py java "$RUNNER_TEMP/sdk-examples/java/build/install/goodmem-plugin-sdk-example/bin/goodmem-plugin-sdk-example"
+      - uses: actions/setup-dotnet@v4
+        if: matrix.language == 'dotnet'
+        with:
+          dotnet-version: "8.0.x"
+      - name: Compile and run .NET pagination example
+        if: matrix.language == 'dotnet'
+        run: |
+          dotnet build "$RUNNER_TEMP/sdk-examples/dotnet/Example.csproj" -c Release
+          python scripts/sdk-refs/test_client_example.py dotnet dotnet "$RUNNER_TEMP/sdk-examples/dotnet/bin/Release/net8.0/Example.dll"

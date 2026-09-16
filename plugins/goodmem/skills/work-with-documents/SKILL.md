@@ -33,7 +33,12 @@ with the upload only for the current request.
 
 - Retrieve passages with `goodmem_memories_retrieve`; use `metadata_filter` when
   the user identifies a filename, type, or other stored attribute.
-- Read a full stored memory with `goodmem_memories_content`.
+- Read stored text with `goodmem_memories_content`. When `truncated` is true,
+  continue with the returned `next_offset` until the needed text is read.
+  Offsets count UTF-8 bytes; use the returned value rather than a character
+  count. The native `fetch` tool returns the first page and the same continuation.
+  For binary originals such as PDFs, use retrieved text passages and page
+  metadata; do not present the original binary bytes as extracted text.
 - Use `goodmem_memories_pages` for page-oriented ingestion.
 - Use `goodmem_memories_list` to see what a space contains.
 

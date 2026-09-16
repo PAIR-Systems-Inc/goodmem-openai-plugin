@@ -22,12 +22,17 @@ or questions fully answered by the current conversation.
   type, topic, or year.
 - Use `answer: true` when synthesis across many memories would materially help.
   Otherwise retrieve passages and answer from them directly.
+- Report `warnings` and `skipped_spaces` when retrieval is partial. If
+  `synthesis_error` is present, answer from the usable passages and explain the
+  limitation. Per-space fallback interleaves local rankings; do not interpret
+  its scores as one global relevance order.
 - Name the source memory, document, or space. Prefer the user's retrieved record
   over general assumptions and call out conflicts.
 - If nothing relevant is returned, say so plainly. Never invent a memory or imply
   that an unindexed memory appeared in search.
 
-Use `goodmem_memories_content` for the full memory and
+Use `goodmem_memories_content` for stored text, following `next_offset` while
+`truncated` is true, and
 `goodmem_memories_pages` to navigate page-oriented documents.
 
 ## Create and organize knowledge

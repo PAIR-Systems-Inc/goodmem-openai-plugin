@@ -1,75 +1,22 @@
 name: SDK reference freshness
 
-# The goodmem-sdk skill's reference files are generated from the published
-# SDK packages and stamped with the version they document. This check fails
-# whenever a registry has a newer release than a reference documents, so
-# stale references surface as a red run instead of silently rotting.
-
 on:
   schedule:
-    - cron: "17 6 * * 1" # weekly, Monday 06:17 UTC
+    - cron: "17 6 * * 1"
   workflow_dispatch:
   pull_request:
     paths:
-      - "plugins/goodmem/skills/goodmem-sdk/references/**"
+      - "plugins/goodmem/skills/goodmem-sdk/**"
+      - "scripts/sdk-refs/**"
+      - ".github/workflows/sdk-refs-freshness.yml"
+
+permissions:
+  contents: read
 
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Compare stamped versions against registries
-        shell: python
-        run: |
-          import json, re, sys, urllib.request
-          from pathlib import Path
-
-          REFS = Path("plugins/goodmem/skills/goodmem-sdk/references")
-          STAMP = re.compile(r"<!-- sdk-ref package=(?P<pkg>\S+) "
-                             r"registry=(?P<reg>\S+) version=(?P<ver>\S+) -->")
-
-          def fetch_json(url):
-              with urllib.request.urlopen(url, timeout=30) as r:
-                  return json.loads(r.read())
-
-          def latest(reg, pkg):
-              if reg == "pypi":
-                  return fetch_json(f"https://pypi.org/pypi/{pkg}/json")["info"]["version"]
-              if reg == "npm":
-                  data = fetch_json(f"https://registry.npmjs.org/{pkg.replace('/', '%2F')}")
-                  return data["dist-tags"]["latest"]
-              if reg == "maven":
-                  group, artifact = pkg.split(":")
-                  url = ("https://repo1.maven.org/maven2/"
-                         f"{group.replace('.', '/')}/{artifact}/maven-metadata.xml")
-                  with urllib.request.urlopen(url, timeout=30) as r:
-                      m = re.search(r"<latest>([^<]+)</latest>", r.read().decode())
-                  if not m:
-                      raise RuntimeError(f"no <latest> for {pkg}")
-                  return m.group(1)
-              if reg == "nuget":
-                  data = fetch_json("https://api.nuget.org/v3-flatcontainer/"
-                                    f"{pkg.lower()}/index.json")
-                  return [v for v in data["versions"] if "-" not in v][-1]
-              raise ValueError(f"unknown registry {reg}")
-
-          stale, seen = [], 0
-          for md in sorted(REFS.glob("*.md")):
-              first = md.read_text().splitlines()[0]
-              m = STAMP.match(first)
-              if not m:
-                  print(f"WARN {md.name}: no sdk-ref stamp on line 1")
-                  continue
-              seen += 1
-              pkg, reg, ver = m["pkg"], m["reg"], m["ver"]
-              newest = latest(reg, pkg)
-              status = "OK  " if newest == ver else "OLD "
-              print(f"{status} {md.name}: documents {pkg} {ver}; {reg} latest {newest}")
-              if newest != ver:
-                  stale.append(md.name)
-          if not seen:
-              print("No stamped references found"); sys.exit(1)
-          if stale:
-              print(f"\n{len(stale)} stale reference(s): {', '.join(stale)}")
-              print("Regenerate them from the published packages and update the stamps.")
-              sys.exit(1)
+      - name: Require all four stamps and compare supported versions against registries
+        run: python3 scripts/sdk-refs/freshness.py

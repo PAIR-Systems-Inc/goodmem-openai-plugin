@@ -14,7 +14,7 @@ SDK references. Host-specific guidance is limited to genuine interface
 differences such as restarting OAuth.
 
 GoodMem stores text: the assistant reads what you share — notes, code, a
-document — and saves what it read, so it is searchable later.
+document — and saves it when you ask, so it is searchable later.
 
 ## Getting started
 
@@ -44,6 +44,31 @@ plugins/goodmem/                   Canonical plugin package
   skills/                          Memory, document, troubleshooting, and SDK skills
   assets/                          Shared logo and listing assets
 ```
+
+## Maintaining SDK references
+
+The supported SDK/server matrix is in `scripts/sdk-refs/versions.json`. To
+refresh references, update that matrix to a tested GoodMem revision and package
+versions, install its Python SDK, then run:
+
+```bash
+python scripts/sdk-refs/generate.py --source /path/to/goodmem
+python scripts/sdk-refs/generate.py --source /path/to/goodmem --check
+python scripts/sdk-refs/freshness.py
+python scripts/sdk-refs/test_python.py
+```
+
+Generation reads committed files at the pinned revision, so local GoodMem work
+is ignored. Python signatures are inspected from the published package;
+other languages use the matching maintained SDK documentation. The source
+checkout needs access to the GoodMem repository. CI uses published packages and
+local HTTP fixtures; it requires no GoodMem credentials or live providers.
+`prepare_examples.py --output /tmp/sdk-examples` extracts the shipped examples
+for the TypeScript, Java, and .NET build/run checks in `sdk-examples.yml`.
+
+The document continuation and retrieval diagnostics require the companion
+gateway changes in `goodmem-cloud-provisioning/services/work-gateway` (and the
+Go replacement). Deploy that gateway update before distributing these skills.
 
 ## Support
 
