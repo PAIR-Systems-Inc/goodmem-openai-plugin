@@ -47,28 +47,41 @@ plugins/goodmem/                   Canonical plugin package
 
 ## Maintaining SDK references
 
-The supported SDK/server matrix is in `scripts/sdk-refs/versions.json`. To
-refresh references, update that matrix to a tested GoodMem revision and package
-versions, install its Python SDK, then run:
+The supported packages and released server baseline are in
+`tools/sdk-refs/versions.json`. Reference generation uses public PyPI, npm, Maven
+Central, and NuGet packages. TypeScript, Java, and .NET request fields and nested
+models are included in the guides. No private checkout or credentials are needed.
+
+Use Python 3.12 with the supported `goodmem` package, Node 22, JDK 21, and .NET 8.
+Install the parser and regenerate all four references:
 
 ```bash
-python scripts/sdk-refs/generate.py --source /path/to/goodmem
-python scripts/sdk-refs/generate.py --source /path/to/goodmem --check
-python scripts/sdk-refs/freshness.py
-python scripts/sdk-refs/test_python.py
+pip install goodmem==0.1.34
+npm ci --ignore-scripts --prefix tools/sdk-refs
+python tools/sdk-refs/generate.py
+python tools/sdk-refs/generate.py --check
+python tools/sdk-refs/freshness.py
+python tools/sdk-refs/test_python.py
+python tools/sdk-refs/test_references.py
 ```
 
-Generation reads committed files at the pinned revision, so local GoodMem work
-is ignored. Python signatures are inspected from the published package;
-other languages use the matching maintained SDK documentation. The source
-checkout needs access to the GoodMem repository. CI uses published packages and
-local HTTP fixtures; it requires no GoodMem credentials or live providers.
+The public maintenance tools live under `tools/sdk-refs`; `scripts/` remains
+ignored for local internal tooling. Downloads and inspector build outputs stay
+in a temporary cache (override with `--cache`). Downloaded npm, Maven, and NuGet
+artifacts are SHA-256 pinned in the matrix. To update a package, record its public
+artifact URL and checksum, regenerate, and review the changed methods and models.
+Python introspection uses the exact installed package version in the matrix.
+
+CI checks regeneration for all four languages, model-field coverage and reference
+links, then compiles and executes the shipped examples against local HTTP
+fixtures. It requires no GoodMem credentials or live providers.
 `prepare_examples.py --output /tmp/sdk-examples` extracts the shipped examples
 for the TypeScript, Java, and .NET build/run checks in `sdk-examples.yml`.
 
-The document continuation and retrieval diagnostics require the companion
-gateway changes in `goodmem-cloud-provisioning/services/work-gateway` (and the
-Go replacement). Deploy that gateway update before distributing these skills.
+The document skills require a hosted gateway that exposes content continuation
+(`offset`, `next_offset`, `truncated`) and retrieval diagnostics (`warnings`,
+`skipped_spaces`, `synthesis_error`). Verify those tool schemas before distributing
+these skills. Merging or publishing a gateway image does not establish deployment.
 
 ## Support
 

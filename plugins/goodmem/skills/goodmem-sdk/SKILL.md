@@ -22,8 +22,9 @@ client: `client.<namespace>.<method>(...)`.
 
 ## Install
 
-Use the supported versions below for these examples. They match the SDKs and
-server contracts at GoodMem `1f464489f1c6a4b9949f2406477ea4e5bec4fdb6`.
+Use the supported versions below for these examples. The references describe
+these published packages; server guidance assumes GoodMem **1.0.320 or later**.
+Older servers may not expose all of the APIs in these SDKs.
 For another installed version, inspect that package's types and documentation
 before reusing signatures. Do not silently upgrade an existing application.
 
@@ -103,11 +104,11 @@ method names in each language's naming convention.
 
 ## Where to go next
 
-Each reference is generated from the matching GoodMem source documentation and
-stamped with its supported package version:
+Each reference is generated from published package declarations and documentation,
+and stamped with its supported package version:
 
 - [Python reference](references/python.md) — Python reference (client construction,
   every namespace, pagination, streaming, errors).
-- [TypeScript reference](references/typescript.md) — method signatures and model links.
+- [TypeScript reference](references/typescript.md) — method signatures and inline request models.
 - [Java reference](references/java.md) — methods and a bounded ingestion example.
-- [.NET reference](references/dotnet.md) — asynchronous methods and model links.
+- [.NET reference](references/dotnet.md) — asynchronous methods and inline request properties.

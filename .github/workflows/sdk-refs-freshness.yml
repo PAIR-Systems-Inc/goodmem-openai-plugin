@@ -7,7 +7,7 @@ on:
   pull_request:
     paths:
       - "plugins/goodmem/skills/goodmem-sdk/**"
-      - "scripts/sdk-refs/**"
+      - "tools/sdk-refs/**"
       - ".github/workflows/sdk-refs-freshness.yml"
 
 permissions:
@@ -19,4 +19,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Require all four stamps and compare supported versions against registries
-        run: python3 scripts/sdk-refs/freshness.py
+        run: python3 tools/sdk-refs/freshness.py

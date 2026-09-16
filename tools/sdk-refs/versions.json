@@ -1,0 +1,37 @@
+{
+  "packages": {
+    "python": {
+      "package": "goodmem",
+      "registry": "pypi",
+      "version": "0.1.34"
+    },
+    "typescript": {
+      "package": "@pairsystems/goodmem",
+      "registry": "npm",
+      "version": "0.1.6",
+      "artifact": {
+        "url": "https://registry.npmjs.org/@pairsystems/goodmem/-/goodmem-0.1.6.tgz",
+        "sha256": "f9d189e2ffb66b87097f86ff30e75dbd80522a8133b52a41ed78c952498fe3f7"
+      }
+    },
+    "java": {
+      "package": "ai.pairsys:goodmem-java",
+      "registry": "maven",
+      "version": "0.2.2",
+      "artifact": {
+        "url": "https://repo.maven.apache.org/maven2/ai/pairsys/goodmem-java/0.2.2/goodmem-java-0.2.2-sources.jar",
+        "sha256": "919cb2b8f25b3aa9aecac0352e59c32f21cd20ff0551d7a295cd14bef875e942"
+      }
+    },
+    "dotnet": {
+      "package": "PairSystems.Goodmem.Client",
+      "registry": "nuget",
+      "version": "2.0.2",
+      "artifact": {
+        "url": "https://api.nuget.org/v3-flatcontainer/pairsystems.goodmem.client/2.0.2/pairsystems.goodmem.client.2.0.2.nupkg",
+        "sha256": "8db191afacb191e2882426a99e2abcee82e061a4bd79854ea46abe180033014a"
+      }
+    }
+  },
+  "server_baseline": "1.0.320"
+}

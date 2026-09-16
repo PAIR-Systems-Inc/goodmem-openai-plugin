@@ -36,7 +36,9 @@ with the upload only for the current request.
 - Read stored text with `goodmem_memories_content`. When `truncated` is true,
   continue with the returned `next_offset` until the needed text is read.
   Offsets count UTF-8 bytes; use the returned value rather than a character
-  count. The native `fetch` tool returns the first page and the same continuation.
+  count. The native `fetch` tool returns the first page; when `truncated` is true,
+  continue with `goodmem_memories_content`, setting `memory_id` to the returned
+  `id` and `offset` to `next_offset`. `fetch` itself does not accept an offset.
   For binary originals such as PDFs, use retrieved text passages and page
   metadata; do not present the original binary bytes as extracted text.
 - Use `goodmem_memories_pages` for page-oriented ingestion.

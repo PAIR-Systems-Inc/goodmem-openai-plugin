@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - "plugins/goodmem/skills/**"
-      - "scripts/sdk-refs/**"
+      - "tools/sdk-refs/**"
       - ".github/workflows/sdk-examples.yml"
   workflow_dispatch:
 
@@ -21,12 +21,14 @@ jobs:
           python-version: "3.12"
       - name: Install supported SDK
         run: |
-          version=$(python -c 'import json; print(json.load(open("scripts/sdk-refs/versions.json"))["packages"]["python"]["version"])')
+          version=$(python -c 'import json; print(json.load(open("tools/sdk-refs/versions.json"))["packages"]["python"]["version"])')
           python -m pip install "goodmem==$version"
       - name: Check signatures and execute the ingestion example
         run: |
-          python scripts/sdk-refs/freshness.py --offline
-          python scripts/sdk-refs/test_python.py
+          python tools/sdk-refs/freshness.py --offline
+          python tools/sdk-refs/test_python.py
+          python tools/sdk-refs/generate.py --language python --check
+          python tools/sdk-refs/test_references.py
 
   compiled-examples:
     runs-on: ubuntu-latest
@@ -40,7 +42,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Extract shipped examples with supported package versions
-        run: python scripts/sdk-refs/prepare_examples.py --output "$RUNNER_TEMP/sdk-examples"
+        run: python tools/sdk-refs/prepare_examples.py --output "$RUNNER_TEMP/sdk-examples"
       - uses: actions/setup-node@v4
         if: matrix.language == 'typescript'
         with:
@@ -50,7 +52,13 @@ jobs:
         run: |
           npm --prefix "$RUNNER_TEMP/sdk-examples/typescript" install --ignore-scripts
           npm --prefix "$RUNNER_TEMP/sdk-examples/typescript" run build
-          python scripts/sdk-refs/test_client_example.py typescript node "$RUNNER_TEMP/sdk-examples/typescript/example.js"
+          python tools/sdk-refs/test_client_example.py typescript node "$RUNNER_TEMP/sdk-examples/typescript/example.js"
+      - name: Reproduce TypeScript reference and verify request fields
+        if: matrix.language == 'typescript'
+        run: |
+          npm ci --ignore-scripts --prefix tools/sdk-refs
+          python tools/sdk-refs/generate.py --language typescript --check
+          python tools/sdk-refs/test_references.py --language typescript
       - uses: actions/setup-java@v4
         if: matrix.language == 'java'
         with:
@@ -64,7 +72,12 @@ jobs:
         if: matrix.language == 'java'
         run: |
           gradle --no-daemon --project-dir "$RUNNER_TEMP/sdk-examples/java" installDist
-          python scripts/sdk-refs/test_client_example.py java "$RUNNER_TEMP/sdk-examples/java/build/install/goodmem-plugin-sdk-example/bin/goodmem-plugin-sdk-example"
+          python tools/sdk-refs/test_client_example.py java "$RUNNER_TEMP/sdk-examples/java/build/install/goodmem-plugin-sdk-example/bin/goodmem-plugin-sdk-example"
+      - name: Reproduce Java reference from the published source JAR
+        if: matrix.language == 'java'
+        run: |
+          python tools/sdk-refs/generate.py --language java --check
+          python tools/sdk-refs/test_references.py --language java
       - uses: actions/setup-dotnet@v4
         if: matrix.language == 'dotnet'
         with:
@@ -73,4 +86,9 @@ jobs:
         if: matrix.language == 'dotnet'
         run: |
           dotnet build "$RUNNER_TEMP/sdk-examples/dotnet/Example.csproj" -c Release
-          python scripts/sdk-refs/test_client_example.py dotnet dotnet "$RUNNER_TEMP/sdk-examples/dotnet/bin/Release/net8.0/Example.dll"
+          python tools/sdk-refs/test_client_example.py dotnet dotnet "$RUNNER_TEMP/sdk-examples/dotnet/bin/Release/net8.0/Example.dll"
+      - name: Reproduce .NET reference and verify request properties
+        if: matrix.language == 'dotnet'
+        run: |
+          python tools/sdk-refs/generate.py --language dotnet --check
+          python tools/sdk-refs/test_references.py --language dotnet

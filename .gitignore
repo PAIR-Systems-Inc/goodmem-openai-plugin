@@ -3,15 +3,14 @@ node_modules/
 .DS_Store
 *.tgz
 .env
-
-# SDK maintenance and regression scripts are part of the repository.
 __pycache__/
-bin/
-obj/
 
-# The gateway service lives in the private repo
-# The hosted gateway is maintained separately; this repository holds only the
-# public plugin bundles. A local working copy may remain here untracked.
+# internal tooling — never committed
+scripts/
+
+# Public SDK maintenance lives under tools/sdk-refs; builds use temporary directories.
+
+# The hosted gateway is maintained separately; a local copy stays untracked.
 gateway/
 
 # editor workspace files — local to one machine, not part of the bundle

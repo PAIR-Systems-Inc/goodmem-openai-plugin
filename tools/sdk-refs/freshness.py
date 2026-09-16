@@ -13,14 +13,20 @@ LANGUAGES = {"python", "typescript", "java", "dotnet"}
 
 
 def validate(refs, matrix):
-    if not re.fullmatch(r"[0-9a-f]{40}", matrix["source_commit"]):
-        raise ValueError("Pin source_commit to a full commit SHA")
+    if not re.fullmatch(r"\d+\.\d+\.\d+", matrix["server_baseline"]):
+        raise ValueError("Specify a released server baseline")
     packages = matrix["packages"]
     if set(packages) != LANGUAGES:
         raise ValueError("Supported matrix must contain all four SDKs")
     if {path.stem for path in refs.glob("*.md")} != LANGUAGES:
         raise ValueError("Exactly four SDK reference files are required")
     for language, package in packages.items():
+        if language != "python":
+            artifact = package["artifact"]
+            if not re.fullmatch(r"[0-9a-f]{64}", artifact["sha256"]):
+                raise ValueError(f"Missing artifact checksum: {language}")
+            if not artifact["url"].startswith("https://"):
+                raise ValueError(f"Artifact must use HTTPS: {language}")
         lines = (refs / f"{language}.md").read_text().splitlines()
         match = STAMP.fullmatch(lines[0]) if lines else None
         expected = tuple(package[key] for key in ("package", "registry", "version"))
