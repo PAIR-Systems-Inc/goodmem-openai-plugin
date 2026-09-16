@@ -42,8 +42,8 @@ with this shape:
 
 - `skills/`
   - the skill payload; each skill keeps the normal skill structure
-  - `goodmem-sdk/references/` holds SDK API references generated from and
-    version-stamped against the published packages
+  - `goodmem-sdk/references/` holds versioned SDK method references generated
+    from the supported Python package and matching GoodMem source documentation
 
 - `assets/`
   - logo and listing assets

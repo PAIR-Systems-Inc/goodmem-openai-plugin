@@ -1,0 +1,2 @@
+# Fixed tokenizer/encoding proxy, not a promise about host billing.
+tiktoken==0.12.0

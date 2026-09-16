@@ -1,0 +1,108 @@
+name: SDK example contracts
+
+on:
+  pull_request:
+    paths:
+      - "plugins/goodmem/skills/**"
+      - "tools/sdk-refs/**"
+      - ".github/workflows/sdk-examples.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install supported SDK
+        run: |
+          sdk_wheel=$(python -c 'import json; a=json.load(open("tools/sdk-refs/versions.json"))["packages"]["python"]["artifact"]; print(a["url"]+"#sha256="+a["sha256"])')
+          python -m pip install "$sdk_wheel" -r tools/sdk-refs/requirements-checks.txt
+      - name: Check reference coverage, navigation, and context budgets
+        run: |
+          python tools/sdk-refs/freshness.py --offline
+          python tools/sdk-refs/test_python.py
+          python tools/sdk-refs/generate.py --language python --check
+          python tools/sdk-refs/test_references.py --language python
+          python tools/sdk-refs/test_context.py
+          python tools/sdk-refs/context.py --report "$RUNNER_TEMP/context-report.json"
+      - name: Execute all Python examples against HTTP fixtures
+        run: |
+          python tools/sdk-refs/prepare_examples.py --output "$RUNNER_TEMP/sdk-examples"
+          python tools/sdk-refs/test_client_example.py python --examples "$RUNNER_TEMP/sdk-examples"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdk-context-reading-traces-python-${{ matrix.python-version }}
+          path: ${{ runner.temp }}/context-report.json
+
+  compiled-examples:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [typescript, java, dotnet]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Extract shipped examples with supported package versions
+        run: python tools/sdk-refs/prepare_examples.py --output "$RUNNER_TEMP/sdk-examples"
+      - uses: actions/setup-node@v4
+        if: matrix.language == 'typescript'
+        with:
+          node-version: "22"
+      - name: Compile and run TypeScript examples; check all documented method accesses
+        if: matrix.language == 'typescript'
+        run: |
+          npm --prefix "$RUNNER_TEMP/sdk-examples/typescript" install --ignore-scripts
+          npm --prefix "$RUNNER_TEMP/sdk-examples/typescript" run build
+          python tools/sdk-refs/test_client_example.py typescript --examples "$RUNNER_TEMP/sdk-examples"
+      - name: Reproduce TypeScript reference and verify request fields
+        if: matrix.language == 'typescript'
+        run: |
+          npm ci --ignore-scripts --prefix tools/sdk-refs
+          python tools/sdk-refs/generate.py --language typescript --check
+          python tools/sdk-refs/test_references.py --language typescript
+      - uses: actions/setup-java@v4
+        if: matrix.language == 'java'
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@v4
+        if: matrix.language == 'java'
+        with:
+          gradle-version: "8.13"
+      - name: Compile and run Java examples
+        if: matrix.language == 'java'
+        run: |
+          gradle --no-daemon --project-dir "$RUNNER_TEMP/sdk-examples/java" installDist
+          python tools/sdk-refs/test_client_example.py java --examples "$RUNNER_TEMP/sdk-examples"
+      - name: Reproduce Java reference from the published source JAR
+        if: matrix.language == 'java'
+        run: |
+          python tools/sdk-refs/generate.py --language java --check
+          python tools/sdk-refs/test_references.py --language java
+      - uses: actions/setup-dotnet@v4
+        if: matrix.language == 'dotnet'
+        with:
+          dotnet-version: "8.0.x"
+      - name: Compile and run .NET examples
+        if: matrix.language == 'dotnet'
+        run: |
+          dotnet build "$RUNNER_TEMP/sdk-examples/dotnet/Example.csproj" -c Release
+          python tools/sdk-refs/test_client_example.py dotnet --examples "$RUNNER_TEMP/sdk-examples"
+      - name: Reproduce .NET reference and verify request properties
+        if: matrix.language == 'dotnet'
+        run: |
+          python tools/sdk-refs/generate.py --language dotnet --check
+          python tools/sdk-refs/test_references.py --language dotnet

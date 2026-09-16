@@ -1,0 +1,19 @@
+<!-- sdk-ref package=goodmem registry=pypi version=0.1.34 -->
+
+# AuthorizationCheck
+
+One concrete, advisory authorization check. Top-level creates and LIST_API_KEY target INSTANCE; CREATE_MEMORY and LIST_MEMORY target a parent SPACE; ordinary resource operations target the concrete resource. LIST_RETRIEVE_MEMORY_LOG_POLICY is not supported by this endpoint.
+
+```python
+from goodmem.models import AuthorizationCheck
+```
+
+- `operation` (`Operation`, required): Operation the caller proposes to perform.
+- `target` (`AccessPolicyTarget`, required): Target required by the operation: INSTANCE for top-level creates and LIST_API_KEY; parent SPACE for CREATE_MEMORY or LIST_MEMORY; otherwise the concrete resource.
+
+[Python](../../python.md)
+
+Related types — open only those used by your request:
+
+- [AccessPolicyTarget](AccessPolicyTarget.md)
+- [Operation](Operation.md)

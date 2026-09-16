@@ -1,0 +1,74 @@
+<!-- sdk-ref package=ai.pairsys:goodmem-java registry=maven version=0.2.2 -->
+
+# Operation
+
+- `CREATE_USER` (`Operation`):
+- `READ_USER` (`Operation`):
+- `UPDATE_USER` (`Operation`):
+- `DELETE_USER` (`Operation`):
+- `LIST_USER` (`Operation`):
+- `MANAGE_USER_ENROLLMENT` (`Operation`):
+- `CREATE_SERVICE_IDENTITY` (`Operation`):
+- `READ_SERVICE_IDENTITY` (`Operation`):
+- `UPDATE_SERVICE_IDENTITY` (`Operation`):
+- `DELETE_SERVICE_IDENTITY` (`Operation`):
+- `LIST_SERVICE_IDENTITY` (`Operation`):
+- `CREATE_SPACE` (`Operation`):
+- `READ_SPACE` (`Operation`):
+- `UPDATE_SPACE` (`Operation`):
+- `DELETE_SPACE` (`Operation`):
+- `LIST_SPACE` (`Operation`):
+- `CREATE_API_KEY` (`Operation`):
+- `READ_API_KEY` (`Operation`):
+- `UPDATE_API_KEY` (`Operation`):
+- `DELETE_API_KEY` (`Operation`):
+- `LIST_API_KEY` (`Operation`):
+- `CREATE_EMBEDDER` (`Operation`):
+- `READ_EMBEDDER` (`Operation`):
+- `UPDATE_EMBEDDER` (`Operation`):
+- `DELETE_EMBEDDER` (`Operation`):
+- `LIST_EMBEDDER` (`Operation`):
+- `PING_EMBEDDER` (`Operation`):
+- `EXECUTE_EMBEDDER` (`Operation`):
+- `READ_EMBEDDER_CREDENTIALS` (`Operation`):
+- `CREATE_RERANKER` (`Operation`):
+- `READ_RERANKER` (`Operation`):
+- `UPDATE_RERANKER` (`Operation`):
+- `DELETE_RERANKER` (`Operation`):
+- `LIST_RERANKER` (`Operation`):
+- `PING_RERANKER` (`Operation`):
+- `EXECUTE_RERANKER` (`Operation`):
+- `READ_RERANKER_CREDENTIALS` (`Operation`):
+- `CREATE_LLM` (`Operation`):
+- `READ_LLM` (`Operation`):
+- `UPDATE_LLM` (`Operation`):
+- `DELETE_LLM` (`Operation`):
+- `LIST_LLM` (`Operation`):
+- `PING_LLM` (`Operation`):
+- `EXECUTE_LLM` (`Operation`):
+- `READ_LLM_CREDENTIALS` (`Operation`):
+- `PROXY_INFERENCE_TARGET` (`Operation`):
+- `OCR_DOCUMENT` (`Operation`):
+- `CREATE_MEMORY` (`Operation`):
+- `READ_MEMORY` (`Operation`):
+- `DELETE_MEMORY` (`Operation`):
+- `LIST_MEMORY` (`Operation`):
+- `CREATE_EXTENSION` (`Operation`):
+- `READ_EXTENSION` (`Operation`):
+- `UPDATE_EXTENSION` (`Operation`):
+- `DELETE_EXTENSION` (`Operation`):
+- `LIST_EXTENSION` (`Operation`):
+- `DOWNLOAD_EXTENSION` (`Operation`):
+- `READ_INSTANCE` (`Operation`):
+- `TRANSFER_INSTANCE_OWNERSHIP` (`Operation`):
+- `TRANSFER_RESOURCE_OWNERSHIP` (`Operation`):
+- `RELOAD_LICENSE` (`Operation`):
+- `DRAIN_SERVER` (`Operation`):
+- `PURGE_BACKGROUND_JOBS` (`Operation`):
+- `CREATE_RETRIEVE_MEMORY_LOG_POLICY` (`Operation`):
+- `READ_RETRIEVE_MEMORY_LOG_POLICY` (`Operation`):
+- `LIST_RETRIEVE_MEMORY_LOG_POLICY` (`Operation`):
+- `DELETE_RETRIEVE_MEMORY_LOG_POLICY` (`Operation`):
+- `MANAGE_ACCESS` (`Operation`):
+
+[Java](../../java.md)

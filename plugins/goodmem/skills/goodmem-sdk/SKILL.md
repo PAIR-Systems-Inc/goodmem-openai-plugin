@@ -1,92 +1,60 @@
 ---
 name: goodmem-sdk
-description: Complete SDK references for building GoodMem into applications, in Python (goodmem), TypeScript (@pairsystems/goodmem), Java (ai.pairsys:goodmem-java), or .NET (PairSystems.Goodmem.Client). Use only when the user explicitly asks to write code that integrates GoodMem — spaces, ingestion, semantic retrieval, RAG pipelines. Default to Python unless they choose another language. Not for adding an embedder, reranker, or LLM to the user's own GoodMem instance — that is a one-time console link; follow using-goodmem-memory.
+description: Versioned SDK references for building GoodMem into applications, in Python (goodmem), TypeScript (@pairsystems/goodmem), Java (ai.pairsys:goodmem-java), or .NET (PairSystems.Goodmem.Client). Use only when the user explicitly asks to write code that integrates GoodMem — spaces, ingestion, semantic retrieval, RAG pipelines. Default to Python unless they choose another language. Not for adding an embedder, reranker, or LLM to the user's own GoodMem instance — that is a one-time console link; follow using-goodmem-memory.
 ---
 
 # GoodMem SDK
 
-Two rules govern this skill. It applies only when the user has explicitly asked
-for code — building, scripting, or integrating; a request to add a model to
-their own GoodMem instance is console setup, handled by `using-goodmem-memory`
-with `goodmem_console_setup`, never by code. And when code is wanted, write
-Python by default; use TypeScript, Java, or .NET only when the user picks one.
+Use this skill for explicitly requested application code, scripts, or integrations.
+Use Python unless the user chooses another language. Setting up a model in the
+user's own instance is a console task: follow `using-goodmem-memory` and
+`goodmem_console_setup`.
 
-GoodMem is a memory and retrieval (RAG) service. Applications store content as
-**memories** inside **spaces**; GoodMem chunks and embeds the content
-server-side using a registered **embedder**, then serves semantic retrieval
-over it — optionally post-processed by a **reranker** (precision) or an
-**LLM** (answer generation/summarization). The REST API lives under
-`{base_url}/v1` and authenticates with an `x-api-key` header carrying a key
-that starts with `gm_`. Every SDK wraps that API with a typed, namespaced
-client: `client.<namespace>.<method>(...)`.
+GoodMem stores memories inside spaces and chunks/embeds content for semantic
+retrieval, with optional reranking or LLM answers. SDKs wrap `{base_url}/v1`,
+using an `x-api-key` header with a `gm_…` key. Registering a known model through
+the SDK's convenience API auto-fills provider, endpoint, and dimensionality.
+Use space keys (`space_keys` in Python) for per-space filters and embedder weights;
+Python's `stream=False` collects retrieval events instead of streaming them.
 
-## Install
+## Read only the relevant reference
 
-Always use the latest published version; the reference files carry the exact
-version they were generated from.
+1. Open the chosen language overview below. Use its tested example for a common
+   workflow, or choose a namespace and operation from the linked indexes.
+2. Read the operation page for exact signatures, behavior, and overload notes.
+3. Open request-model pages for the arguments being constructed. Follow nested
+   type links only for fields being used; optional fields do not require reading
+   their entire model graph.
 
-| Language | Package | Install |
-|---|---|---|
-| Python (>= 3.10) | `goodmem` (PyPI) | `pip install goodmem` |
-| TypeScript / Node | `@pairsystems/goodmem` (npm) | `npm install @pairsystems/goodmem` |
-| Java (JDK 21+) | `ai.pairsys:goodmem-java` (Maven Central) | add the Maven/Gradle dependency |
-| .NET | `PairSystems.Goodmem.Client` (NuGet) | `dotnet add package PairSystems.Goodmem.Client` |
+When search is available, search for the exact method or type name within the
+chosen language directory. Do not concatenate reference directories or load
+other languages. Small linked indexes provide the same navigation without shell
+access.
 
-## Python quick start
+- [Python](references/python.md)
+- [TypeScript](references/typescript.md)
+- [Java](references/java.md)
+- [.NET](references/dotnet.md)
 
-Credentials always come from the environment — never hardcode keys:
+Each overview identifies the supported published SDK version. Server guidance
+assumes GoodMem **1.0.320 or later**; older servers may lack APIs. Inspect an
+existing application's installed version before reusing signatures, and do not
+silently upgrade it. Read credentials from environment/configuration.
 
-```python
-import os
-from goodmem import Goodmem
+## Shared behavior
 
-with Goodmem(
-    base_url=os.environ["GOODMEM_BASE_URL"],   # e.g. https://your-instance.cloud.goodmem.ai
-    api_key=os.environ["GOODMEM_API_KEY"],     # gm_...
-) as client:
-    memory = client.memories.create(
-        space_id="<space-uuid>",
-        original_content="GoodMem stores and retrieves memories.",
-    )
-    with client.memories.retrieve(
-        message="what does GoodMem do?",
-        space_ids=["<space-uuid>"],
-    ) as stream:
-        for event in stream:
-            if event.retrieved_item:
-                print(event.retrieved_item.chunk.chunk.chunk_text)
-```
-
-The same flow translates directly to the other SDKs — same namespaces, same
-method names in each language's naming convention.
-
-## Core concepts
-
-- **Spaces need an embedder.** `spaces.create` requires at least one embedder
-  configuration (`space_embedders`). Register an embedder first (or reuse an
-  existing one from `embedders.list()`); passing a known `model_identifier`
-  auto-fills provider type, endpoint URL, and dimensionality.
-- **Ingestion is asynchronous.** Creating a memory returns immediately with
-  `processing_status` of `PENDING`; chunking and embedding happen in the
-  background. Poll `memories.get` until the status is `COMPLETED` (or
-  `FAILED`) before retrieving — un-indexed memories are invisible to search.
-- **Retrieval is scoped and filterable.** Target one or more spaces via
-  `space_ids`, or use `space_keys` for per-space metadata filter expressions
-  and per-embedder weights. Optional `reranker_id` re-scores results;
-  `llm_id` adds LLM answer generation over the retrieved chunks.
-- **Results stream.** Retrieval returns a stream of typed events (retrieved
-  chunks, memory definitions, LLM reply text, boundaries, status); pass
-  `stream=False` to collect them into a list instead.
-- **OCR requires GoodMem Enterprise.** The `ocr` namespace fails on
-  non-Enterprise instances; ingest documents as text/PDF memories instead.
-
-## Where to go next
-
-Each reference is generated from the published package and stamped with the
-version it documents:
-
-- `references/python.md` — complete Python reference (client construction,
-  every namespace, pagination, streaming, errors).
-- `references/typescript.md` — complete TypeScript reference.
-- `references/java.md` — complete Java reference.
-- `references/dotnet.md` — complete .NET reference.
+- **Spaces need an embedder.** Reuse or register one before creating a space.
+  Current APIs use access policies; space creation has no public-read flag.
+- **Ingestion is asynchronous.** After creation, poll until `COMPLETED`, stop on
+  `FAILED`, and enforce a deadline before retrieval. Unindexed memories are
+  invisible to search.
+- **Retrieval is scoped and streamed.** Select the intended spaces and filters.
+  Optional rerankers reorder passages; an LLM can generate an answer. Preserve
+  usable passages when synthesis fails and report warnings or partial coverage.
+- **Revocation is permanent.** API-key `status=INACTIVE` and DELETE perform the
+  same revocation. Issue a replacement key; revoked keys cannot become ACTIVE.
+  Revocation requires `DELETE_API_KEY`; label edits require `UPDATE_API_KEY`.
+- **Protect credentials.** Provider error bodies can include secrets; do not
+  log them or expose them in user-facing responses.
+- **OCR requires Enterprise.** On other instances, ingest document text/PDF
+  memories instead of calling the OCR namespace.

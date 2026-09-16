@@ -1,0 +1,6 @@
+{
+  "name": "goodmem-plugin-reference-tools",
+  "private": true,
+  "type": "module",
+  "dependencies": { "typescript": "5.8.3" }
+}
