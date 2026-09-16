@@ -1,9 +1,0 @@
-{
-  "mcpServers": {
-    "goodmem": {
-      "type": "http",
-      "url": "https://http--work-gateway--tnvsb986ksp6.code.run/mcp",
-      "oauth_resource": "https://http--work-gateway--tnvsb986ksp6.code.run/mcp"
-    }
-  }
-}

@@ -1,7 +1,7 @@
 {
   "name": "goodmem",
   "version": "1.0.0",
-  "description": "Persistent memory for AI workflows: store knowledge in access-controlled spaces on your GoodMem Cloud instance and retrieve it with semantic search and reranking.",
+  "description": "Persistent project and team memory: recall past knowledge, save conversations and documents, and build applications with GoodMem SDKs.",
   "author": {
     "name": "PAIR Systems, Inc.",
     "email": "support@pairsys.ai",
@@ -23,10 +23,10 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "GoodMem",
-    "shortDescription": "Give your agent persistent memory: spaces, semantic retrieval, and reranking",
-    "longDescription": "GoodMem gives your agent persistent memory on your GoodMem Cloud instance. Sign in once with your GoodMem account — no API keys, no local server — and Codex connects to your instance through GoodMem's hosted service. Create spaces to hold memories, save what you and Codex read, and search it back with semantic retrieval. Narrow searches with metadata filters, and let an LLM summarize the retrieved memories into a direct answer. Comes with ready-made skills for common memory workflows, plus Python, TypeScript, Java, and .NET SDK references for building GoodMem into your own applications.",
+    "shortDescription": "Recall what you know, save what matters, and build with GoodMem",
+    "longDescription": "GoodMem gives OpenAI experiences persistent memory on your GoodMem Cloud instance through one hosted OAuth connection. It recalls relevant project and team knowledge, saves requested conversations as self-contained question-and-answer pairs, and turns shared documents into searchable text. Advanced workflows support spaces, metadata filters, processing diagnostics, and semantic retrieval. Developer tasks can also use complete Python, TypeScript, Java, and .NET SDK references. No local server or plugin API-key configuration is required.",
     "developerName": "PAIR Systems, Inc.",
-    "category": "Developer Tools",
+    "category": "Productivity",
     "capabilities": [
       "Interactive",
       "Read",
@@ -36,17 +36,19 @@
     "privacyPolicyURL": "https://pairsys.ai/privacy",
     "termsOfServiceURL": "https://pairsys.ai/terms",
     "defaultPrompt": [
-      "Set up a GoodMem space for this project and save what the docs folder says",
-      "What do we already know about this topic in GoodMem?",
-      "Save a summary of this session to GoodMem"
+      "What do we already know about this project?",
+      "Save this conversation to GoodMem",
+      "Remember this document for later"
     ],
     "brandColor": "#2563EB",
     "composerIcon": "./assets/goodmem-small.png",
     "logo": "./assets/goodmem.png",
     "screenshots": [
+      "./assets/screenshot-3.png",
       "./assets/screenshot-1.png",
       "./assets/screenshot-2.png",
-      "./assets/screenshot-3.png"
+      "./assets/screenshot-4.png",
+      "./assets/screenshot-5.png"
     ]
   }
 }
