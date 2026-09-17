@@ -21,7 +21,7 @@ report the connected identity and continue with the original task.
 | Connection is unauthorized after previously working | The instance key or grant changed | Reconnect GoodMem through the current host |
 | Sign-in rejects the account | Organization access is not enabled | Ask the GoodMem administrator |
 | Instance is absent from the picker | Wrong team, provisioning, or paused instance | Select the correct team and check the GoodMem Cloud console |
-| Space creation returns a setup link | No embedder is configured | Relay the one-time link exactly, then retry after setup |
+| Space creation returns a setup link | No embedder is configured | Relay the Quick Start link exactly; afterward list spaces and reuse the first space before attempting another create |
 | Memory status is `FAILED` | Embedding pipeline or provider configuration failed | Read `processing_error` and direct the user to repair it in the cloud console |
 | Agent transcribes a PDF into separate text memories | Outdated instructions or an unavailable upload tool | Check that `goodmem_memories_upload` is available and refresh the plugin instructions and tool list; do not repeat the text saves |
 | Upload tool or native file object is unavailable | Outdated tool discovery or the host did not provide a usable attachment | Refresh available tools or request a fresh attachment; explain the limitation without silently transcribing |

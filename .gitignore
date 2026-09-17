@@ -5,6 +5,11 @@ node_modules/
 .env
 __pycache__/
 
+# Local assistant notes and generated submission files.
+.agent-notes/
+.submission-artifacts/
+SUBMISSION_*.md
+
 # internal tooling — never committed
 scripts/
 

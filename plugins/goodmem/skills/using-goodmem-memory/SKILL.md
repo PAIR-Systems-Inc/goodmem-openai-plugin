@@ -51,8 +51,17 @@ Write only when the user asks to save, remember, ingest, or organize something.
 For conversations, follow the `save-conversation` skill. For files, follow the
 `work-with-documents` skill.
 
-If space creation reports that no embedder exists, relay its one-time setup link
-exactly.
+If space creation reports that no embedder exists, relay its one-time Quick Start
+link exactly. Quick Start sets up an embedding model, any chat model or reranker
+supported by the provider, and an optional first space from a provider key entered
+on the console page. For an explicit initial-setup request, call
+`goodmem_console_setup` with `kind: "quick_start"`.
+
+When the user finishes Quick Start, call `goodmem_spaces_list` again. Reuse the
+space it created if suitable for the user's task; do not blindly retry the failed
+space creation and create a duplicate. If the user skipped creating a space, or
+needs a separate one, create it using the now-configured embedder and continue
+the original save. If setup was incomplete, explain what is still needed.
 
 ## Add or change models — embedder, reranker, LLM
 
@@ -61,10 +70,12 @@ registering a model configuration on the user's GoodMem Cloud instance. It is a
 console action, identical on every surface:
 
 1. Call `goodmem_console_setup` with `kind` set to `embedder`, `reranker`, or
-   `llm`.
+   `llm`. An `embedder` request automatically opens Quick Start when the instance
+   has no embedders; check the returned `kind`.
 2. Relay the returned link verbatim, noting it works once, expires in about
    30 minutes, and asks for the user's own model provider API key on the page.
-3. When the user says they are done, retry whatever needed the model.
+3. When the user says they are done, follow the space-discovery steps above if
+   the returned `kind` was `quick_start`; otherwise retry whatever needed the model.
 
 Never write code, scaffold a project, or touch provider credentials for this —
 the API key belongs on the console page, not in the chat. An embedder makes
