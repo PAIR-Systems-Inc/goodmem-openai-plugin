@@ -1,6 +1,6 @@
 {
   "name": "goodmem",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Persistent project and team memory: recall past knowledge, save conversations and documents, and build applications with GoodMem SDKs.",
   "author": {
     "name": "PAIR Systems, Inc.",
@@ -24,7 +24,7 @@
   "interface": {
     "displayName": "GoodMem",
     "shortDescription": "Recall what you know, save what matters, and build with GoodMem",
-    "longDescription": "GoodMem gives OpenAI experiences persistent memory on your GoodMem Cloud instance through one hosted OAuth connection. It recalls relevant project and team knowledge, saves requested conversations as self-contained question-and-answer pairs, and turns shared documents into searchable text. Advanced workflows support spaces, metadata filters, processing diagnostics, and semantic retrieval. Developer tasks can also use complete Python, TypeScript, Java, and .NET SDK references. No local server or plugin API-key configuration is required.",
+    "longDescription": "GoodMem gives OpenAI experiences persistent memory on your GoodMem Cloud instance through one hosted OAuth connection. It recalls relevant project and team knowledge, saves requested conversations as self-contained question-and-answer pairs, and uploads original documents for GoodMem to process and make searchable. Advanced workflows support spaces, metadata filters, processing diagnostics, and semantic retrieval. Developer tasks can also use complete Python, TypeScript, Java, and .NET SDK references. No local server or plugin API-key configuration is required.",
     "developerName": "PAIR Systems, Inc.",
     "category": "Productivity",
     "capabilities": [

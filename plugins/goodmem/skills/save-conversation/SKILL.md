@@ -32,12 +32,15 @@ will lose its meaning outside the current chat.
 ## Include shared documents
 
 A document discussed in the saved conversation is part of what the user asked to
-keep. Follow `work-with-documents` to save its readable content, not merely its
-filename or path. Use metadata connecting it to the conversation, and name the
-document in the related Q&A answer so later retrieval connects them.
+keep. Follow `work-with-documents` to upload each original attachment as one
+memory with `goodmem_memories_upload`; do not transcribe it into per-page text
+memories. Use metadata connecting it to the conversation, and name the document
+in the related Q&A answer so later retrieval connects them. Use text creates for
+pasted text or explicitly requested excerpts.
 
-If a document is illegible, say so and save the useful discussion rather than
-silently omitting everything.
+If a file cannot be uploaded or GoodMem reports a processing failure, explain
+the problem while preserving the useful discussion. Do not silently replace the
+original with a transcription or claim that an unsaved file was retained.
 
 ## Confirm the result
 

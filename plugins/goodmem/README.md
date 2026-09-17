@@ -16,7 +16,7 @@ It currently includes these skills:
 
 - proactively recalling relevant project and team knowledge
 - saving requested conversations as self-contained question-and-answer pairs
-- saving readable document content as searchable memories
+- uploading original documents for GoodMem to process and make searchable
 - creating and organizing memory spaces on the user's GoodMem Cloud instance
 - semantic retrieval across spaces, with metadata filters and reranking
 - shared cloud connection and processing diagnostics
@@ -66,8 +66,10 @@ it has none, the failure carries a one-time setup link that opens the user's
 console on the right screen; the skills instruct the agent to relay it
 verbatim.
 
-GoodMem stores text: the agent reads what the user shares and saves what it
-read. Destructive tools are labeled as such and remain subject to the host's
-approval flow.
+GoodMem stores text and original files. Requested attachment saves use
+`goodmem_memories_upload`, one memory per file; GoodMem handles extraction and
+chunking. The tool advertises the configured file-size limit. After updating the
+gateway or this plugin, refresh the host's tool discovery and installed skills.
+Destructive tools remain subject to the host's approval flow.
 
 Support: [docs.goodmem.ai](https://docs.goodmem.ai) · [support@pairsys.ai](mailto:support@pairsys.ai)
