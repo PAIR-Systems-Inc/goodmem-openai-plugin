@@ -1,6 +1,6 @@
 {
   "name": "goodmem",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Persistent project and team memory: recall past knowledge, save conversations and documents, and build applications with GoodMem SDKs.",
   "author": {
     "name": "PAIR Systems, Inc.",
@@ -33,8 +33,8 @@
       "Write"
     ],
     "websiteURL": "https://docs.goodmem.ai",
-    "privacyPolicyURL": "https://pairsys.ai/privacy",
-    "termsOfServiceURL": "https://pairsys.ai/terms",
+    "privacyPolicyURL": "https://cloud.goodmem.ai/privacy",
+    "termsOfServiceURL": "https://cloud.goodmem.ai/terms",
     "defaultPrompt": [
       "What do we already know about this project?",
       "Save this conversation to GoodMem",
