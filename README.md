@@ -13,8 +13,8 @@ document ingestion, spaces, semantic retrieval, processing diagnostics, and
 SDK references. Host-specific guidance is limited to genuine interface
 differences such as restarting OAuth.
 
-GoodMem stores text: the assistant reads what you share — notes, code, a
-document — and saves it when you ask, so it is searchable later.
+GoodMem stores text and original files. When asked to save an attachment, the
+assistant uploads it directly; GoodMem handles extraction and chunking.
 
 ## Getting started
 
@@ -104,7 +104,8 @@ its cost; Python 3.12 and 3.13 must reproduce identical reference pages.
 These are deterministic reading paths, not an autonomous-agent evaluation or a
 prediction of host billing; host prompts, tool output, and conversation add context.
 
-The document skills require a hosted gateway that exposes content continuation
+The document skills require `goodmem_memories_upload` with native file inputs,
+as well as a hosted gateway that exposes content continuation
 (`offset`, `next_offset`, `truncated`) and retrieval diagnostics (`warnings`,
 `skipped_spaces`, `synthesis_error`). Verify those tool schemas before distributing
 these skills. Merging or publishing a gateway image does not establish deployment.

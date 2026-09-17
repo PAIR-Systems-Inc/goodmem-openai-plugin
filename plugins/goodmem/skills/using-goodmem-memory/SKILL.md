@@ -43,8 +43,10 @@ Write only when the user asks to save, remember, ingest, or organize something.
 2. Otherwise call `goodmem_spaces_create` with a clear topic or project name and
    tell the user which space was chosen. The instance's embedder is selected
    automatically; if several exist, use an `embedder_name` offered by the tool.
-3. Create one coherent memory per fact, passage, or natural section with useful
-   typed metadata such as topic, source, filename, page, or date.
+3. For text, create one coherent memory per fact, passage, or natural section
+   with useful typed metadata such as topic, source, filename, page, or date.
+   For an uploaded file, use `goodmem_memories_upload` to save the original as
+   one memory; do not extract and save each page yourself.
 
 For conversations, follow the `save-conversation` skill. For files, follow the
 `work-with-documents` skill.
