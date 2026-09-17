@@ -15,6 +15,10 @@ named for the topic, not the date. If the user supplies a name, use it exactly.
 Tell the user which space you chose. Keep using that space if they save more of
 the same session later.
 
+If no embedder is configured, follow the Quick Start steps in
+`using-goodmem-memory`. After setup, list spaces again and reuse a suitable space
+before creating another.
+
 ## Save self-contained exchanges
 
 Create one memory per useful exchange with both sides present:

@@ -13,7 +13,9 @@ transcribing the attachment first is unnecessary and loses its original structur
 ## Ingest a shared document
 
 1. Call `goodmem_spaces_list`; reuse the matching space or create a topic-based
-   one. Tell the user which space you used.
+   one. If setup is needed, follow Quick Start in `using-goodmem-memory` and list
+   spaces again afterward so its first space can be reused. Tell the user which
+   space you used.
 2. Call `goodmem_memories_upload` with the selected `space_id`, a unique
    `operation_id`, and the attachment's native `file` object: `download_url` and
    `file_id`, plus `file_name` and `mime_type` when available. Do not pass base64,
